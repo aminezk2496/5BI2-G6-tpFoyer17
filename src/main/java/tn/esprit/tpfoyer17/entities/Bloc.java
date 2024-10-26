@@ -40,4 +40,6 @@ public class Bloc implements Serializable {
     Set<Chambre> chambres;
 
 
+    public void setIdBloc(long l) {
+    }
 }
