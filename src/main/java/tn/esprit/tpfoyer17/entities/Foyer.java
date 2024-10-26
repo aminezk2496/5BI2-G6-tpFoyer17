@@ -24,6 +24,7 @@ public class Foyer implements Serializable {
     long idFoyer;
 
     String nomFoyer;
+    String adresse; // Ajout de l'attribut adresse pour correspondre au test
 
     long capaciteFoyer;
 
@@ -33,10 +34,7 @@ public class Foyer implements Serializable {
     Universite universite;
 
     @ToString.Exclude
-    //@JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "foyer", cascade = CascadeType.ALL)
     Set<Bloc> blocs;
-
-
-
 }
