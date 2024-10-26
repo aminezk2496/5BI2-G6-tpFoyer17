@@ -47,8 +47,9 @@ class ChambreRepositoryTest {
     @Test
     void testFindByBlocIdBloc() {
         Bloc bloc = new Bloc();
-        bloc.setIdBloc(1L);
-        entityManager.persistAndFlush(bloc);
+        entityManager.persistAndFlush(bloc); // idBloc will be generated
+        Long generatedId = bloc.getIdBloc();
+
 
         Chambre chambre = Chambre.builder().bloc(bloc).build();
         entityManager.persistAndFlush(chambre);
