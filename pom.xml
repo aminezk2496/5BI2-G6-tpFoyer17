@@ -20,6 +20,8 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <junit.jupiter.version>5.9.3</junit.jupiter.version>
+        <junit.platform.version>1.9.3</junit.platform.version>
     </properties>
 
     <dependencies>
@@ -29,14 +31,13 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-
-
-
         <!-- Spring Boot Starter Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -49,13 +50,8 @@
             <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Spring Boot Starter Test (JUnit) -->
+
+        <!-- Spring Boot Starter Test (JUnit 5) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -67,9 +63,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- Mockito for Unit Tests -->
-
 
         <!-- MySQL Connector -->
         <dependency>
@@ -85,20 +78,12 @@
             <version>2.0.0</version>
         </dependency>
 
-        <!-- Lombok to reduce boilerplate code -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- TestNG -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>7.5</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -138,17 +123,6 @@
                 </executions>
             </plugin>
 
-
-
-
-
-
-
-
-
-
-
-
             <!-- Maven Resources Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -159,13 +133,12 @@
                 </configuration>
             </plugin>
 
-
+            <!-- SonarQube Plugin -->
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>3.9.1.2184</version>
             </plugin>
-
 
             <!-- Surefire Plugin for running tests -->
             <plugin>
@@ -179,7 +152,6 @@
                     </includes>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
