@@ -2,57 +2,61 @@ package tn.esprit.tpfoyer17.services.impementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
+import tn.esprit.tpfoyer17.services.impementations.BlocService;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional // Pour s'assurer que les données de test sont isolées
 class BlocServiceTest {
 
-    @Mock
-    private BlocRepository blocRepository;
-
-    @InjectMocks
+    @Autowired
     private BlocService blocService;
+
+    @Autowired
+    private BlocRepository blocRepository;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        blocRepository.deleteAll(); // Nettoyer la base de données avant chaque test
     }
 
     @Test
     void testRetrieveBlocs() {
+        // Ajouter des données pour le test
         Bloc bloc1 = new Bloc();
         Bloc bloc2 = new Bloc();
-        when(blocRepository.findAll()).thenReturn(Arrays.asList(bloc1, bloc2));
+        blocRepository.save(bloc1);
+        blocRepository.save(bloc2);
 
+        // Récupérer les blocs via le service
         List<Bloc> blocs = blocService.retrieveBlocs();
 
+        // Vérifications
         assertNotNull(blocs);
         assertEquals(2, blocs.size());
-        verify(blocRepository, times(1)).findAll();
     }
 
     @Test
     void testAddBloc() {
+        // Créer un bloc
         Bloc bloc = new Bloc();
-        when(blocRepository.save(bloc)).thenReturn(bloc);
+        bloc.setNomBloc("BlocTest");
 
+        // Ajouter le bloc via le service
         Bloc savedBloc = blocService.addBloc(bloc);
 
+        // Vérifications
         assertNotNull(savedBloc);
-        verify(blocRepository, times(1)).save(bloc);
+        assertTrue(blocRepository.findById(savedBloc.getIdBloc()).isPresent());
     }
 
-    // Additional tests...
+    // Autres tests...
 }
