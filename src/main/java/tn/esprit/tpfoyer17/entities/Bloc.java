@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,7 +20,7 @@ public class Bloc implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE) // Prevent manual setting of ID
     long idBloc;
 
     String nomBloc;
@@ -30,15 +28,12 @@ public class Bloc implements Serializable {
     long capaciteBloc;
 
     @ToString.Exclude
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Use LAZY loading
     @JsonIgnore
     Foyer foyer;
 
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "bloc")
+    @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Added cascade and LAZY fetch
     Set<Chambre> chambres;
-
-
-
 }
