@@ -12,7 +12,6 @@ import tn.esprit.tpfoyer17.repositories.BlocRepository;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -55,5 +54,5 @@ class BlocServiceTest {
         verify(blocRepository, times(1)).save(bloc);
     }
 
-    // Autres tests...
+    // Additional tests...
 }

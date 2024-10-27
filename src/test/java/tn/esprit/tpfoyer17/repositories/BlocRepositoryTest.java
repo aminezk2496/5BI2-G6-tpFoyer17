@@ -43,5 +43,5 @@ class BlocRepositoryTest {
         assertEquals(foyer.getIdFoyer(), blocs.get(0).getFoyer().getIdFoyer());
     }
 
-    // Autres tests...
+    // Additional tests...
 }
