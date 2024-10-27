@@ -32,44 +32,47 @@ class BlocServiceTest {
 
     @Test
     void testRetrieveBlocs() {
-        // Given
+        // Arrange
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
         Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
         when(blocRepository.findAll()).thenReturn(Arrays.asList(bloc1, bloc2));
 
-        // When
+        // Act
         List<Bloc> blocs = blocService.retrieveBlocs();
 
-        // Then
+        // Assert
         assertNotNull(blocs);
         assertEquals(2, blocs.size());
+        assertEquals("Bloc1", blocs.get(0).getNomBloc());
+        assertEquals("Bloc2", blocs.get(1).getNomBloc());
         verify(blocRepository, times(1)).findAll();
     }
 
     @Test
     void testAddBloc() {
-        // Given
+        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
-        when(blocRepository.save(bloc)).thenReturn(bloc);
+        when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
 
-        // When
+        // Act
         Bloc savedBloc = blocService.addBloc(bloc);
 
-        // Then
+        // Assert
         assertNotNull(savedBloc);
+        assertEquals("BlocTest", savedBloc.getNomBloc());
         verify(blocRepository, times(1)).save(bloc);
     }
 
     @Test
     void testDeleteBloc() {
-        // Given
-        Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
-        when(blocRepository.findById(blocToDelete.getIdBloc())).thenReturn(Optional.of(blocToDelete));
+        // Arrange
+        Bloc blocToDelete = Bloc.builder().idBloc(1L).nomBloc("BlocToDelete").build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(blocToDelete));
 
-        // When
-        blocService.removeBloc(blocToDelete.getIdBloc());
+        // Act
+        blocService.removeBloc(1L);
 
-        // Then
+        // Assert
         verify(blocRepository, times(1)).delete(blocToDelete);
     }
 }
