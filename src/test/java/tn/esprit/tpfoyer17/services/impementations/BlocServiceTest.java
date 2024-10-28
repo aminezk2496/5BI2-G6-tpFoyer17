@@ -2,34 +2,36 @@ package tn.esprit.tpfoyer17.services.impementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
-import tn.esprit.tpfoyer17.services.impementations.BlocService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class BlocServiceTest {
 
-    @Autowired
-    private BlocRepository blocRepository; // Assurez-vous que ce dépôt est injecté
+    @Mock
+    private BlocRepository blocRepository;
 
+    @InjectMocks
     private BlocService blocService;
+
     private List<Bloc> blocList;
 
     @BeforeEach
     void setUp() {
-        blocList = new ArrayList<>();
-        blocService = new BlocService(blocRepository);
+        MockitoAnnotations.openMocks(this);
 
-        // Optionnel: initialiser quelques blocs pour les tests
+        blocList = new ArrayList<>();
+
+        // Initialiser quelques blocs pour les tests
         Bloc bloc1 = new Bloc();
         bloc1.setIdBloc(1L);
         bloc1.setNomBloc("Bloc 1");
@@ -46,10 +48,11 @@ class BlocServiceTest {
 
     @Test
     void testRetrieveBlocs() {
-        blocRepository.saveAll(blocList); // Enregistrer les blocs initialisés
+        when(blocRepository.findAll()).thenReturn(blocList);
 
         List<Bloc> result = blocService.retrieveBlocs();
         assertEquals(2, result.size());
+        verify(blocRepository, times(1)).findAll();
     }
 
     @Test
@@ -57,12 +60,14 @@ class BlocServiceTest {
         Bloc bloc = new Bloc();
         bloc.setIdBloc(1L);
         bloc.setNomBloc("Bloc Test");
-        blocService.addBloc(bloc);
+
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
 
         Bloc result = blocService.retrieveBloc(1L);
         assertNotNull(result);
         assertEquals(1L, result.getIdBloc());
         assertEquals("Bloc Test", result.getNomBloc());
+        verify(blocRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -72,9 +77,12 @@ class BlocServiceTest {
         bloc.setNomBloc("Bloc Nouveau");
         bloc.setCapaciteBloc(120);
 
+        when(blocRepository.save(bloc)).thenReturn(bloc);
+
         Bloc result = blocService.addBloc(bloc);
         assertNotNull(result);
         assertEquals("Bloc Nouveau", result.getNomBloc());
+        verify(blocRepository, times(1)).save(bloc);
     }
 
     @Test
@@ -82,23 +90,22 @@ class BlocServiceTest {
         Bloc bloc = new Bloc();
         bloc.setIdBloc(1L);
         bloc.setNomBloc("Bloc Modifié");
-        blocService.addBloc(bloc);
 
-        bloc.setNomBloc("Bloc Modifié Version 2");
+        when(blocRepository.save(bloc)).thenReturn(bloc);
+
         Bloc updatedBloc = blocService.updateBloc(bloc);
         assertNotNull(updatedBloc);
-        assertEquals("Bloc Modifié Version 2", updatedBloc.getNomBloc());
+        assertEquals("Bloc Modifié", updatedBloc.getNomBloc());
+        verify(blocRepository, times(1)).save(bloc);
     }
 
     @Test
     void testRemoveBloc() {
-        Bloc bloc = new Bloc();
-        bloc.setIdBloc(1L);
-        bloc.setNomBloc("Bloc à Supprimer");
-        blocService.addBloc(bloc);
+        Long idBloc = 1L;
 
-        blocService.removeBloc(1L);
-        Bloc result = blocService.retrieveBloc(1L);
-        assertNull(result);
+        doNothing().when(blocRepository).deleteById(idBloc);
+
+        blocService.removeBloc(idBloc);
+        verify(blocRepository, times(1)).deleteById(idBloc);
     }
 }
