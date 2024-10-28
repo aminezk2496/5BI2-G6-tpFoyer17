@@ -13,7 +13,8 @@ import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-@ActiveProfiles
+
+@ActiveProfiles("test")  // Utiliser le profil test
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class BlocServiceTest {
@@ -26,12 +27,12 @@ class BlocServiceTest {
 
     @BeforeEach
     void setUp() {
-        blocRepository.deleteAll();
+        blocRepository.deleteAll();  // Nettoyage de la base avant chaque test
     }
 
     @AfterEach
     void tearDown() {
-        blocRepository.deleteAll();
+        blocRepository.deleteAll();  // Nettoyage de la base après chaque test
     }
 
     @Test
@@ -45,6 +46,12 @@ class BlocServiceTest {
 
         assertNotNull(blocs);
         assertEquals(2, blocs.size());
+        assertTrue(blocs.contains(bloc1));
+        assertTrue(blocs.contains(bloc2));
+
+        // Suppression explicite des éléments créés
+        blocRepository.delete(bloc1);
+        blocRepository.delete(bloc2);
     }
 
     @Test
@@ -56,6 +63,9 @@ class BlocServiceTest {
         assertNotNull(savedBloc);
         assertEquals("BlocTest", savedBloc.getNomBloc());
         assertTrue(blocRepository.existsById(savedBloc.getIdBloc()));
+
+        // Suppression explicite de l'élément créé
+        blocRepository.delete(savedBloc);
     }
 
     @Test
@@ -68,6 +78,9 @@ class BlocServiceTest {
 
         assertNotNull(updatedBloc);
         assertEquals("NewName", updatedBloc.getNomBloc());
+
+        // Suppression explicite de l'élément mis à jour
+        blocRepository.delete(updatedBloc);
     }
 
     @Test
@@ -85,6 +98,8 @@ class BlocServiceTest {
         blocService.removeBloc(savedBloc.getIdBloc());
 
         assertFalse(blocRepository.existsById(savedBloc.getIdBloc()));
+
+        // Pas de suppression nécessaire ici car l'élément a été supprimé dans le test
     }
 
     @Test
@@ -94,6 +109,9 @@ class BlocServiceTest {
 
         List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
 
-        assertTrue(blocs.isEmpty());
+        assertTrue(blocs.isEmpty());  // Tester avec un foyer qui n'existe pas
+
+        // Suppression explicite de l'élément créé
+        blocRepository.delete(bloc);
     }
 }
