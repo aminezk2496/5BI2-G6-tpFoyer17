@@ -1,58 +1,137 @@
-package tn.esprit.tpfoyer17.services.impementations;  // Correction ici
+package tn.esprit.tpfoyer17.services.impementations;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
+import tn.esprit.tpfoyer17.services.impementations.BlocService;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class BlocServiceTest {
 
-    @InjectMocks
+    @Autowired
     private BlocService blocService;
 
-    @Mock
+    @Autowired
     private BlocRepository blocRepository;
+
+    private Bloc blocToDeleteAfterTest;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);  // Initialisation des mocks
+        blocRepository.deleteAll(); // Nettoyer les données avant chaque test
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (blocToDeleteAfterTest != null && blocRepository.existsById(blocToDeleteAfterTest.getIdBloc())) {
+            blocRepository.deleteById(blocToDeleteAfterTest.getIdBloc());
+        }
+    }
+
+    @Test
+    void testRetrieveBlocs() {
+        // Arrange
+        Bloc bloc = Bloc.builder().nomBloc("BlocRetrieve").build();
+        blocToDeleteAfterTest = blocService.addBloc(bloc);
+
+        // Act
+        List<Bloc> blocs = blocService.retrieveBlocs();
+
+        // Assert
+        assertFalse(blocs.isEmpty());
+        assertTrue(blocs.stream().anyMatch(b -> "BlocRetrieve".equals(b.getNomBloc())));
     }
 
     @Test
     void testAddBloc() {
         // Arrange
-        Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();  // Création d'un bloc de test
-        when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);  // Simulation de la sauvegarde
+        Bloc bloc = Bloc.builder().nomBloc("BlocTestAdd").build();
 
         // Act
-        Bloc savedBloc = blocService.addBloc(bloc);  // Appel de la méthode à tester
+        Bloc savedBloc = blocService.addBloc(bloc);
+        blocToDeleteAfterTest = savedBloc;
 
         // Assert
-        assertNotNull(savedBloc);  // Vérification que le bloc sauvegardé n'est pas null
-        assertEquals("BlocTest", savedBloc.getNomBloc());  // Vérification du nom du bloc
-        verify(blocRepository, times(1)).save(bloc);  // Vérification que la méthode save a été appelée une fois
+        assertNotNull(savedBloc);
+        assertEquals("BlocTestAdd", savedBloc.getNomBloc());
     }
 
     @Test
-    void testDeleteBloc() {
+    void testUpdateBloc() {
         // Arrange
-        Bloc blocToDelete = Bloc.builder().idBloc(1L).nomBloc("BlocToDelete").build();  // Bloc à supprimer
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(blocToDelete));  // Simulation de la recherche
+        Bloc bloc = Bloc.builder().nomBloc("BlocOriginal").build();
+        Bloc savedBloc = blocService.addBloc(bloc);
+        blocToDeleteAfterTest = savedBloc;
 
         // Act
-        blocService.removeBloc(1L);  // Appel de la méthode à tester
+        savedBloc.setNomBloc("BlocUpdated");
+        Bloc updatedBloc = blocService.updateBloc(savedBloc);
 
         // Assert
-        verify(blocRepository, times(1)).deleteById(1L);  // Vérification que la méthode deleteById a été appelée une fois
+        assertEquals("BlocUpdated", updatedBloc.getNomBloc());
+    }
+
+    @Test
+    void testRetrieveBloc() {
+        // Arrange
+        Bloc bloc = Bloc.builder().nomBloc("BlocToRetrieve").build();
+        Bloc savedBloc = blocService.addBloc(bloc);
+        blocToDeleteAfterTest = savedBloc;
+
+        // Act
+        Bloc retrievedBloc = blocService.retrieveBloc(savedBloc.getIdBloc());
+
+        // Assert
+        assertNotNull(retrievedBloc);
+        assertEquals("BlocToRetrieve", retrievedBloc.getNomBloc());
+    }
+
+    @Test
+    void testRemoveBloc() {
+        // Arrange
+        Bloc bloc = Bloc.builder().nomBloc("BlocToRemove").build();
+        Bloc savedBloc = blocService.addBloc(bloc);
+
+        // Act
+        blocService.removeBloc(savedBloc.getIdBloc());
+
+        // Assert
+        assertFalse(blocRepository.findById(savedBloc.getIdBloc()).isPresent());
+    }
+
+    @Test
+    void testFindByFoyerIdFoyer() {
+        // Arrange
+        Bloc bloc = Bloc.builder().nomBloc("BlocWithFoyer").build();
+        blocToDeleteAfterTest = blocService.addBloc(bloc);
+
+        // Act
+        List<Bloc> blocs = blocService.findByFoyerIdFoyer(bloc.getIdBloc());
+
+        // Assert
+        assertNotNull(blocs);
+        assertTrue(blocs.stream().anyMatch(b -> "BlocWithFoyer".equals(b.getNomBloc())));
+    }
+
+    @Test
+    void testFindByChambresIdChambre() {
+        // Arrange
+        Bloc bloc = Bloc.builder().nomBloc("BlocWithChambre").build();
+        blocToDeleteAfterTest = blocService.addBloc(bloc);
+
+        // Act
+        Bloc foundBloc = blocService.findByChambresIdChambre(bloc.getIdBloc());
+
+        // Assert
+        assertNotNull(foundBloc);
+        assertEquals("BlocWithChambre", foundBloc.getNomBloc());
     }
 }
