@@ -7,7 +7,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.tpfoyer17.entities.Bloc;
+import tn.esprit.tpfoyer17.entities.Chambre;
+import tn.esprit.tpfoyer17.entities.enumerations.TypeChambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
+import tn.esprit.tpfoyer17.repositories.ChambreRepository;
+import tn.esprit.tpfoyer17.repositories.UniversiteRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,13 +21,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class BlocServiceTest {
+class ChambreServiceMockitoTest {
 
     @InjectMocks
-    private BlocService blocService;
+    private ChambreService chambreService;
+
+    @Mock
+    private ChambreRepository chambreRepository;
 
     @Mock
     private BlocRepository blocRepository;
+
+    @Mock
+    private UniversiteRepository universiteRepository;
 
     @BeforeEach
     void setUp() {
@@ -31,105 +41,59 @@ class BlocServiceTest {
     }
 
     @Test
-    void testRetrieveBlocs() {
+    void testRetrieveAllChambres() {
         // Arrange
-        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
-        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
-        when(blocRepository.findAll()).thenReturn(Arrays.asList(bloc1, bloc2));
+        Chambre chambre1 = Chambre.builder().numeroChambre(101L).typeChambre(TypeChambre.SIMPLE).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102L).typeChambre(TypeChambre.DOUBLE).build();
+        when(chambreRepository.findAll()).thenReturn(Arrays.asList(chambre1, chambre2));
 
         // Act
-        List<Bloc> blocs = blocService.retrieveBlocs();
+        List<Chambre> chambres = chambreService.retrieveAllChambres();
 
         // Assert
-        assertNotNull(blocs);
-        assertEquals(2, blocs.size());
-        assertEquals("Bloc1", blocs.get(0).getNomBloc());
-        assertEquals("Bloc2", blocs.get(1).getNomBloc());
-        verify(blocRepository, times(1)).findAll();
+        assertNotNull(chambres);
+        assertEquals(2, chambres.size());
+        assertEquals(101L, chambres.get(0).getNumeroChambre());
+        assertEquals(102L, chambres.get(1).getNumeroChambre());
+        verify(chambreRepository, times(1)).findAll();
     }
 
     @Test
-    void testAddBloc() {
+    void testAddChambre() {
         // Arrange
-        Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
-        when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
+        Chambre chambre = Chambre.builder().numeroChambre(103L).typeChambre(TypeChambre.SIMPLE).build();
+        when(chambreRepository.save(any(Chambre.class))).thenReturn(chambre);
 
         // Act
-        Bloc savedBloc = blocService.addBloc(bloc);
+        Chambre savedChambre = chambreService.addChambre(chambre);
 
         // Assert
-        assertNotNull(savedBloc);
-        assertEquals("BlocTest", savedBloc.getNomBloc());
-        verify(blocRepository, times(1)).save(bloc);
+        assertNotNull(savedChambre);
+        assertEquals(103L, savedChambre.getNumeroChambre());
+        verify(chambreRepository, times(1)).save(chambre);
     }
 
-    @Test
-    void testUpdateBloc() {
-        // Arrange
-        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("UpdatedBloc").build();
-        when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
 
-        // Act
-        Bloc updatedBloc = blocService.updateBloc(bloc);
-
-        // Assert
-        assertNotNull(updatedBloc);
-        assertEquals("UpdatedBloc", updatedBloc.getNomBloc());
-        verify(blocRepository, times(1)).save(bloc);
-    }
 
     @Test
-    void testRetrieveBloc() {
+    void testAffecterChambresABloc() {
         // Arrange
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
+        Chambre chambre1 = Chambre.builder().numeroChambre(101L).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102L).build();
+        List<Long> chambreIds = Arrays.asList(101L, 102L);
+
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+        when(chambreRepository.findByNumeroChambreIn(chambreIds)).thenReturn(Arrays.asList(chambre1, chambre2));
 
         // Act
-        Bloc retrievedBloc = blocService.retrieveBloc(1L);
+        Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, 1L);
 
         // Assert
-        assertNotNull(retrievedBloc);
-        assertEquals("Bloc1", retrievedBloc.getNomBloc());
-        verify(blocRepository, times(1)).findById(1L);
+        assertNotNull(affectedBloc);
+        assertEquals("Bloc1", affectedBloc.getNomBloc());
+        verify(chambreRepository, times(2)).save(any(Chambre.class));
     }
 
-    @Test
-    void testDeleteBloc() {
-        // Act
-        blocService.removeBloc(1L);
 
-        // Assert
-        verify(blocRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void testFindByFoyerIdFoyer() {
-        // Arrange
-        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
-        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
-        when(blocRepository.findByFoyerIdFoyer(1L)).thenReturn(Arrays.asList(bloc1, bloc2));
-
-        // Act
-        List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
-
-        // Assert
-        assertNotNull(blocs);
-        assertEquals(2, blocs.size());
-        verify(blocRepository, times(1)).findByFoyerIdFoyer(1L);
-    }
-
-    @Test
-    void testFindByChambresIdChambre() {
-        // Arrange
-        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("BlocWithChambre").build();
-        when(blocRepository.findByChambresIdChambre(1L)).thenReturn(bloc);
-
-        // Act
-        Bloc foundBloc = blocService.findByChambresIdChambre(1L);
-
-        // Assert
-        assertNotNull(foundBloc);
-        assertEquals("BlocWithChambre", foundBloc.getNomBloc());
-        verify(blocRepository, times(1)).findByChambresIdChambre(1L);
-    }
 }
