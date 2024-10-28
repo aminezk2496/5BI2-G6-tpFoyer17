@@ -1,33 +1,36 @@
 package tn.esprit.tpfoyer17.services.impementations;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class BlocServiceTestMockito {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class BlocServiceTest {
 
-    @InjectMocks
+    @Autowired
     private BlocService blocService;
 
-    @Mock
+    @Autowired
     private BlocRepository blocRepository;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        blocRepository.deleteAll();  // Ensure a clean state at the start of each test
+    }
+
+    @AfterEach
+    void tearDown() {
+        blocRepository.deleteAll();  // Clean up any data after each test
     }
 
     @Test
@@ -35,7 +38,8 @@ class BlocServiceTestMockito {
         // Arrange
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
         Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
-        when(blocRepository.findAll()).thenReturn(Arrays.asList(bloc1, bloc2));
+        blocRepository.save(bloc1);
+        blocRepository.save(bloc2);
 
         // Act
         List<Bloc> blocs = blocService.retrieveBlocs();
@@ -45,14 +49,16 @@ class BlocServiceTestMockito {
         assertEquals(2, blocs.size());
         assertEquals("Bloc1", blocs.get(0).getNomBloc());
         assertEquals("Bloc2", blocs.get(1).getNomBloc());
-        verify(blocRepository, times(1)).findAll();
+
+        // Clean up specific records, if needed
+        blocRepository.delete(bloc1);
+        blocRepository.delete(bloc2);
     }
 
     @Test
     void testAddBloc() {
         // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
-        when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
 
         // Act
         Bloc savedBloc = blocService.addBloc(bloc);
@@ -60,19 +66,24 @@ class BlocServiceTestMockito {
         // Assert
         assertNotNull(savedBloc);
         assertEquals("BlocTest", savedBloc.getNomBloc());
-        verify(blocRepository, times(1)).save(bloc);
+        assertTrue(blocRepository.existsById(savedBloc.getIdBloc()));
+
+        // Clean up specific record
+        blocRepository.delete(savedBloc);
     }
 
     @Test
     void testDeleteBloc() {
         // Arrange
-        Bloc blocToDelete = Bloc.builder().idBloc(1L).nomBloc("BlocToDelete").build();
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(blocToDelete));
+        Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
+        Bloc savedBloc = blocRepository.save(blocToDelete);
 
         // Act
-        blocService.removeBloc(1L);
+        blocService.removeBloc(savedBloc.getIdBloc());
 
         // Assert
-        verify(blocRepository, times(1)).deleteById(1L);
+        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()));
+
+        // Clean up is not needed here as the delete is part of the test case
     }
 }
