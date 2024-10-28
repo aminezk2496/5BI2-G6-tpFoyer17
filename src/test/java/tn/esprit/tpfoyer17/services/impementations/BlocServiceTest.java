@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import tn.esprit.tpfoyer17.entities.Bloc;
+import tn.esprit.tpfoyer17.entities.Foyer;
+import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
-import tn.esprit.tpfoyer17.services.impementations.BlocService;
+import tn.esprit.tpfoyer17.repositories.FoyerRepository;
+import tn.esprit.tpfoyer17.repositories.ChambreRepository;
 
 import java.util.List;
 
@@ -16,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-
 class BlocServiceTest {
 
     @Autowired
@@ -25,11 +27,19 @@ class BlocServiceTest {
     @Autowired
     private BlocRepository blocRepository;
 
+    @Autowired
+    private FoyerRepository foyerRepository;
+
+    @Autowired
+    private ChambreRepository chambreRepository;
+
     private Bloc blocToDeleteAfterTest;
 
     @BeforeEach
     void setUp() {
-        blocRepository.deleteAll(); // Nettoyer les données avant chaque test
+        blocRepository.deleteAll();
+        foyerRepository.deleteAll();
+        chambreRepository.deleteAll();
     }
 
     @AfterEach
@@ -41,99 +51,91 @@ class BlocServiceTest {
 
     @Test
     void testRetrieveBlocs() {
-        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocRetrieve").build();
         blocToDeleteAfterTest = blocService.addBloc(bloc);
 
-        // Act
         List<Bloc> blocs = blocService.retrieveBlocs();
 
-        // Assert
         assertFalse(blocs.isEmpty());
         assertTrue(blocs.stream().anyMatch(b -> "BlocRetrieve".equals(b.getNomBloc())));
     }
 
     @Test
     void testAddBloc() {
-        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocTestAdd").build();
 
-        // Act
         Bloc savedBloc = blocService.addBloc(bloc);
         blocToDeleteAfterTest = savedBloc;
 
-        // Assert
         assertNotNull(savedBloc);
         assertEquals("BlocTestAdd", savedBloc.getNomBloc());
     }
 
     @Test
     void testUpdateBloc() {
-        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocOriginal").build();
         Bloc savedBloc = blocService.addBloc(bloc);
         blocToDeleteAfterTest = savedBloc;
 
-        // Act
         savedBloc.setNomBloc("BlocUpdated");
         Bloc updatedBloc = blocService.updateBloc(savedBloc);
 
-        // Assert
         assertEquals("BlocUpdated", updatedBloc.getNomBloc());
     }
 
     @Test
     void testRetrieveBloc() {
-        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocToRetrieve").build();
         Bloc savedBloc = blocService.addBloc(bloc);
         blocToDeleteAfterTest = savedBloc;
 
-        // Act
         Bloc retrievedBloc = blocService.retrieveBloc(savedBloc.getIdBloc());
 
-        // Assert
         assertNotNull(retrievedBloc);
         assertEquals("BlocToRetrieve", retrievedBloc.getNomBloc());
     }
 
     @Test
     void testRemoveBloc() {
-        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocToRemove").build();
         Bloc savedBloc = blocService.addBloc(bloc);
 
-        // Act
         blocService.removeBloc(savedBloc.getIdBloc());
 
-        // Assert
         assertFalse(blocRepository.findById(savedBloc.getIdBloc()).isPresent());
     }
 
     @Test
     void testFindByFoyerIdFoyer() {
-        // Arrange
-        Bloc bloc = Bloc.builder().nomBloc("BlocWithFoyer").build();
+        Foyer foyer = new Foyer();
+        foyer.setNom("Foyer Test");
+        foyerRepository.save(foyer);
+
+        Bloc bloc = Bloc.builder().nomBloc("BlocWithFoyer").foyer(foyer).build();
         blocToDeleteAfterTest = blocService.addBloc(bloc);
 
-        // Act
-        List<Bloc> blocs = blocService.findByFoyerIdFoyer(bloc.getIdBloc());
+        List<Bloc> blocs = blocService.findByFoyerIdFoyer(foyer.getIdFoyer());
 
-        // Assert
         assertNotNull(blocs);
+        assertFalse(blocs.isEmpty());
         assertTrue(blocs.stream().anyMatch(b -> "BlocWithFoyer".equals(b.getNomBloc())));
     }
 
     @Test
     void testFindByChambresIdChambre() {
-        // Arrange
-        Bloc bloc = Bloc.builder().nomBloc("BlocWithChambre").build();
+        Foyer foyer = new Foyer();
+        foyer.setNom("Foyer Test");
+        foyerRepository.save(foyer);
+
+        Chambre chambre = new Chambre();
+        chambre.setFoyer(foyer);
+        chambreRepository.save(chambre);
+
+        Bloc bloc = Bloc.builder().nomBloc("BlocWithChambre").foyer(foyer).build();
         blocToDeleteAfterTest = blocService.addBloc(bloc);
 
-        // Act
-        Bloc foundBloc = blocService.findByChambresIdChambre(bloc.getIdBloc());
+        Bloc foundBloc = blocService.findByChambresIdChambre(chambre.getIdChambre());
 
-        // Assert
         assertNotNull(foundBloc);
         assertEquals("BlocWithChambre", foundBloc.getNomBloc());
     }

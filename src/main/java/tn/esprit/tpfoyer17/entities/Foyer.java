@@ -37,4 +37,7 @@ public class Foyer implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "foyer", cascade = CascadeType.ALL)
     Set<Bloc> blocs;
+
+    public void setNom(String foyerTest) {
+    }
 }

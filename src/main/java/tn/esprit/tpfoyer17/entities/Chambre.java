@@ -39,4 +39,7 @@ public class Chambre implements Serializable {
     @OneToMany
     @JsonIgnore
     Set<Reservation> reservations ;
+
+    public void setFoyer(Foyer foyer) {
+    }
 }
