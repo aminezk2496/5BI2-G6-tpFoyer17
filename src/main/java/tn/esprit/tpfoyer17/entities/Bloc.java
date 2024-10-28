@@ -37,8 +37,6 @@ public class Bloc implements Serializable {
     @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Added cascade and LAZY fetch
     Set<Chambre> chambres;
 
-    public void setIdBloc(long idBloc) {
-        this.idBloc = idBloc;
-    }
+
 
 }
