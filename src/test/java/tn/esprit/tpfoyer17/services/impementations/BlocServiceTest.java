@@ -4,9 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.entities.Foyer;
 import tn.esprit.tpfoyer17.entities.Chambre;
@@ -18,7 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@SpringBootTest
 class BlocServiceTest {
 
     @Autowired
@@ -123,7 +121,6 @@ class BlocServiceTest {
 
     @Test
     void testFindByChambresIdChambre() {
-        // Arrange : Création du Foyer et du Bloc associé
         Foyer foyer = new Foyer();
         foyer.setNomFoyer("Foyer Test");
         foyerRepository.save(foyer);
@@ -131,15 +128,12 @@ class BlocServiceTest {
         Bloc bloc = Bloc.builder().nomBloc("BlocWithChambre").foyer(foyer).build();
         blocToDeleteAfterTest = blocService.addBloc(bloc);
 
-        // Associer et enregistrer la Chambre avec le Bloc
         Chambre chambre = new Chambre();
-        chambre.setBloc(bloc);  // Associe la chambre au bloc
+        chambre.setBloc(bloc);
         chambreRepository.save(chambre);
 
-        // Act : Recherchez le Bloc via l'ID de la Chambre
         Bloc foundBloc = blocService.findByChambresIdChambre(chambre.getIdChambre());
 
-        // Assert
         assertNotNull(foundBloc, "Bloc trouvé devrait ne pas être nul");
         assertEquals("BlocWithChambre", foundBloc.getNomBloc());
     }
