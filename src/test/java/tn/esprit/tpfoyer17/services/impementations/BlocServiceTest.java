@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import tn.esprit.tpfoyer17.entities.Bloc;
@@ -17,8 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@DataJpaTest
 class BlocServiceTest {
 
     @Autowired
@@ -108,7 +108,7 @@ class BlocServiceTest {
     @Test
     void testFindByFoyerIdFoyer() {
         Foyer foyer = new Foyer();
-        foyer.setNom("Foyer Test");
+        foyer.setNomFoyer("Foyer Test");
         foyerRepository.save(foyer);
 
         Bloc bloc = Bloc.builder().nomBloc("BlocWithFoyer").foyer(foyer).build();
@@ -125,7 +125,7 @@ class BlocServiceTest {
     void testFindByChambresIdChambre() {
         // Arrange : Création du Foyer et du Bloc associé
         Foyer foyer = new Foyer();
-        foyer.setNom("Foyer Test");
+        foyer.setNomFoyer("Foyer Test");
         foyerRepository.save(foyer);
 
         Bloc bloc = Bloc.builder().nomBloc("BlocWithChambre").foyer(foyer).build();

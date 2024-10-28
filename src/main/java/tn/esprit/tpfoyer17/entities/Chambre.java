@@ -40,6 +40,9 @@ public class Chambre implements Serializable {
     @JsonIgnore
     Set<Reservation> reservations ;
 
+    public Chambre(int i, int ordinal) {
+    }
+
     public void setFoyer(Foyer foyer) {
     }
 }
