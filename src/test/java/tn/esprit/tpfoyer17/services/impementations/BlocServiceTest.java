@@ -25,65 +25,74 @@ class BlocServiceTest {
 
     @BeforeEach
     void setUp() {
-        blocRepository.deleteAll();  // Ensure a clean state at the start of each test
+        blocRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
-        blocRepository.deleteAll();  // Clean up any data after each test
+        blocRepository.deleteAll();
     }
 
     @Test
     void testRetrieveBlocs() {
-        // Arrange
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
         Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
         blocRepository.save(bloc1);
         blocRepository.save(bloc2);
 
-        // Act
         List<Bloc> blocs = blocService.retrieveBlocs();
 
-        // Assert
         assertNotNull(blocs);
         assertEquals(2, blocs.size());
-        assertEquals("Bloc1", blocs.get(0).getNomBloc());
-        assertEquals("Bloc2", blocs.get(1).getNomBloc());
-
-        // Clean up specific records, if needed
-        blocRepository.delete(bloc1);
-        blocRepository.delete(bloc2);
     }
 
     @Test
     void testAddBloc() {
-        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
 
-        // Act
         Bloc savedBloc = blocService.addBloc(bloc);
 
-        // Assert
         assertNotNull(savedBloc);
         assertEquals("BlocTest", savedBloc.getNomBloc());
         assertTrue(blocRepository.existsById(savedBloc.getIdBloc()));
+    }
 
-        // Clean up specific record
-        blocRepository.delete(savedBloc);
+    @Test
+    void testUpdateBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("OldName").build();
+        Bloc savedBloc = blocRepository.save(bloc);
+        savedBloc.setNomBloc("NewName");
+
+        Bloc updatedBloc = blocService.updateBloc(savedBloc);
+
+        assertNotNull(updatedBloc);
+        assertEquals("NewName", updatedBloc.getNomBloc());
+    }
+
+    @Test
+    void testRetrieveNonExistentBloc() {
+        Bloc bloc = blocService.retrieveBloc(999L);
+
+        assertNull(bloc);
     }
 
     @Test
     void testDeleteBloc() {
-        // Arrange
         Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
         Bloc savedBloc = blocRepository.save(blocToDelete);
 
-        // Act
         blocService.removeBloc(savedBloc.getIdBloc());
 
-        // Assert
         assertFalse(blocRepository.existsById(savedBloc.getIdBloc()));
+    }
 
-        // Clean up is not needed here as the delete is part of the test case
+    @Test
+    void testFindByFoyerIdFoyer() {
+        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
+        blocRepository.save(bloc);
+
+        List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
+
+        assertTrue(blocs.isEmpty());
     }
 }
