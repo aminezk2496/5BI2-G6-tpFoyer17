@@ -123,20 +123,24 @@ class BlocServiceTest {
 
     @Test
     void testFindByChambresIdChambre() {
+        // Arrange : Création du Foyer et du Bloc associé
         Foyer foyer = new Foyer();
         foyer.setNom("Foyer Test");
         foyerRepository.save(foyer);
 
-        Chambre chambre = new Chambre();
-        chambre.setFoyer(foyer);
-        chambreRepository.save(chambre);
-
         Bloc bloc = Bloc.builder().nomBloc("BlocWithChambre").foyer(foyer).build();
         blocToDeleteAfterTest = blocService.addBloc(bloc);
 
+        // Associer et enregistrer la Chambre avec le Bloc
+        Chambre chambre = new Chambre();
+        chambre.setBloc(bloc);  // Associe la chambre au bloc
+        chambreRepository.save(chambre);
+
+        // Act : Recherchez le Bloc via l'ID de la Chambre
         Bloc foundBloc = blocService.findByChambresIdChambre(chambre.getIdChambre());
 
-        assertNotNull(foundBloc);
+        // Assert
+        assertNotNull(foundBloc, "Bloc trouvé devrait ne pas être nul");
         assertEquals("BlocWithChambre", foundBloc.getNomBloc());
     }
 }
