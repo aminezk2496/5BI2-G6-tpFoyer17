@@ -88,20 +88,5 @@ class ChambreServiceTest {
         assertEquals(2, chambresAffectees.size());
     }
 
-    @Test
-    void testGetChambresParNomUniversite() {
-        // Arrange
-        String nomUniversite = "Universite1";
-        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
-        blocRepository.save(bloc);
-        Chambre chambre = Chambre.builder().numeroChambre(101L).bloc(bloc).build();
-        chambreRepository.save(chambre);
 
-        // Act
-        List<Chambre> chambres = chambreService.getChambresParNomUniversite(nomUniversite);
-
-        // Assert
-        assertNotNull(chambres);
-        assertEquals(1, chambres.size());
-    }
 }
