@@ -51,10 +51,23 @@ class BlocServiceTest {
         when(blocRepository.findById(1L)).thenReturn(Optional.of(blocToDelete));  // Mock findById method
 
         // Act
-        blocService.removeBloc(1L);
+        blocService.removeBloc(1L);  // Call the method under test
 
         // Assert
         verify(blocRepository, times(1)).findById(1L);  // Verify findById was called once
         verify(blocRepository, times(1)).deleteById(1L);  // Verify deleteById was called once
+    }
+
+    @Test
+    void testDeleteBloc_NotFound() {
+        // Arrange
+        when(blocRepository.findById(1L)).thenReturn(Optional.empty());  // Mock findById to return empty
+
+        // Act
+        blocService.removeBloc(1L);  // Call the method under test
+
+        // Assert
+        verify(blocRepository, times(1)).findById(1L);  // Verify findById was called once
+        verify(blocRepository, never()).deleteById(anyLong());  // Verify deleteById was never called
     }
 }
