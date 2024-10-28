@@ -2,54 +2,112 @@ package tn.esprit.tpfoyer17.services.impementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.entities.enumerations.TypeChambre;
+import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.repositories.ChambreRepository;
+import tn.esprit.tpfoyer17.repositories.UniversiteRepository;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@DataJpaTest
-public class ChambreServiceTest {
+@SpringBootTest
+class ChambreServiceTest {
 
-    @Autowired
-    private ChambreRepository chambreRepository;
-
+    @InjectMocks
     private ChambreService chambreService;
 
+    @Mock
+    private ChambreRepository chambreRepository;
+
+    @Mock
+    private BlocRepository blocRepository;
+
+    @Mock
+    private UniversiteRepository universiteRepository;
+
     @BeforeEach
-    public void setUp() {
-        chambreService = new ChambreService(chambreRepository, null, null); // Passer des mocks ou null pour les autres repos
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testAddChambre() {
-        // Création d'un objet Chambre
-        Chambre chambre = new Chambre();
-        chambre.setNumeroChambre(101);
-        chambre.setTypeChambre(TypeChambre.DOUBLE);
+    void testRetrieveAllChambres() {
+        // Arrange
+        Chambre chambre1 = Chambre.builder().numeroChambre(101L).typeChambre(TypeChambre.SIMPLE).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102L).typeChambre(TypeChambre.DOUBLE).build();
+        when(chambreRepository.findAll()).thenReturn(Arrays.asList(chambre1, chambre2));
 
-        // Ajout de la chambre
-        Chambre savedChambre = chambreService.addChambre(chambre);
-
-        // Vérification que la chambre a été ajoutée
-        assertEquals(chambre.getNumeroChambre(), savedChambre.getNumeroChambre());
-    }
-
-    @Test
-    public void testRetrieveAllChambres() {
-        // Ajout de deux chambres
-        chambreService.addChambre(new Chambre(102, TypeChambre.SIMPLE.ordinal()));
-        chambreService.addChambre(new Chambre(103, TypeChambre.DOUBLE.ordinal()));
-
-        // Récupération de toutes les chambres
+        // Act
         List<Chambre> chambres = chambreService.retrieveAllChambres();
 
-        // Vérification que deux chambres sont présentes
+        // Assert
+        assertNotNull(chambres);
         assertEquals(2, chambres.size());
+        assertEquals(101L, chambres.get(0).getNumeroChambre());
+        assertEquals(102L, chambres.get(1).getNumeroChambre());
+        verify(chambreRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testAddChambre() {
+        // Arrange
+        Chambre chambre = Chambre.builder().numeroChambre(103L).typeChambre(TypeChambre.SIMPLE).build();
+        when(chambreRepository.save(any(Chambre.class))).thenReturn(chambre);
+
+        // Act
+        Chambre savedChambre = chambreService.addChambre(chambre);
+
+        // Assert
+        assertNotNull(savedChambre);
+        assertEquals(103L, savedChambre.getNumeroChambre());
+        verify(chambreRepository, times(1)).save(chambre);
+    }
+
+
+
+    @Test
+    void testAffecterChambresABloc() {
+        // Arrange
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
+        Chambre chambre1 = Chambre.builder().numeroChambre(101L).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102L).build();
+        List<Long> chambreIds = Arrays.asList(101L, 102L);
+
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+        when(chambreRepository.findByNumeroChambreIn(chambreIds)).thenReturn(Arrays.asList(chambre1, chambre2));
+
+        // Act
+        Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, 1L);
+
+        // Assert
+        assertNotNull(affectedBloc);
+        assertEquals("Bloc1", affectedBloc.getNomBloc());
+        verify(chambreRepository, times(2)).save(any(Chambre.class));
+    }
+
+    @Test
+    void testGetChambresParNomUniversite() {
+        // Arrange
+        String nomUniversite = "Universite1";
+        Chambre chambre = Chambre.builder().numeroChambre(101L).build();
+        when(chambreRepository.findByBlocFoyerUniversiteNomUniversiteLike(nomUniversite)).thenReturn(Arrays.asList(chambre));
+
+        // Act
+        List<Chambre> chambres = chambreService.getChambresParNomUniversite(nomUniversite);
+
+        // Assert
+        assertNotNull(chambres);
+        assertEquals(1, chambres.size());
+        verify(chambreRepository, times(1)).findByBlocFoyerUniversiteNomUniversiteLike(nomUniversite);
     }
 }
