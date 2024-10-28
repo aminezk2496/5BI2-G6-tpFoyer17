@@ -1,12 +1,9 @@
 package tn.esprit.tpfoyer17.services.impementations;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 
@@ -24,93 +21,85 @@ class BlocServiceTest {
     @Autowired
     private BlocRepository blocRepository;
 
-    @BeforeEach
-    void setUp() {
-        blocRepository.deleteAll();  // Nettoyage de la base avant chaque test
-    }
-
-    @AfterEach
-    void tearDown() {
-        blocRepository.deleteAll();  // Nettoyage de la base après chaque test
-    }
-
     @Test
     void testRetrieveBlocs() {
+        // Arrange
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
         Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
         blocRepository.save(bloc1);
         blocRepository.save(bloc2);
 
+        // Act
         List<Bloc> blocs = blocService.retrieveBlocs();
 
-        assertNotNull(blocs);
-        assertEquals(2, blocs.size());
-        assertTrue(blocs.contains(bloc1));
-        assertTrue(blocs.contains(bloc2));
-
-        // Suppression explicite des éléments créés
-        blocRepository.delete(bloc1);
-        blocRepository.delete(bloc2);
+        // Assert
+        assertNotNull(blocs, "The retrieved blocs list should not be null");
+        assertEquals(2, blocs.size(), "There should be exactly 2 blocs in the list");
+        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc1")), "Bloc1 should be in the retrieved blocs");
+        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc2")), "Bloc2 should be in the retrieved blocs");
     }
 
     @Test
     void testAddBloc() {
+        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
 
+        // Act
         Bloc savedBloc = blocService.addBloc(bloc);
 
-        assertNotNull(savedBloc);
-        assertEquals("BlocTest", savedBloc.getNomBloc());
-        assertTrue(blocRepository.existsById(savedBloc.getIdBloc()));
-
-        // Suppression explicite de l'élément créé
-        blocRepository.delete(savedBloc);
+        // Assert
+        assertNotNull(savedBloc, "Saved bloc should not be null");
+        assertEquals("BlocTest", savedBloc.getNomBloc(), "Bloc name should be 'BlocTest'");
+        assertTrue(blocRepository.existsById(savedBloc.getIdBloc()), "Saved bloc should exist in the repository");
     }
 
     @Test
     void testUpdateBloc() {
+        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("OldName").build();
         Bloc savedBloc = blocRepository.save(bloc);
         savedBloc.setNomBloc("NewName");
 
+        // Act
         Bloc updatedBloc = blocService.updateBloc(savedBloc);
 
-        assertNotNull(updatedBloc);
-        assertEquals("NewName", updatedBloc.getNomBloc());
-
-        // Suppression explicite de l'élément mis à jour
-        blocRepository.delete(updatedBloc);
+        // Assert
+        assertNotNull(updatedBloc, "Updated bloc should not be null");
+        assertEquals("NewName", updatedBloc.getNomBloc(), "Bloc name should be updated to 'NewName'");
     }
 
     @Test
     void testRetrieveNonExistentBloc() {
+        // Act
         Bloc bloc = blocService.retrieveBloc(999L);
 
-        assertNull(bloc);
+        // Assert
+        assertNull(bloc, "Retrieved bloc should be null for non-existent ID");
     }
 
     @Test
     void testDeleteBloc() {
+        // Arrange
         Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
         Bloc savedBloc = blocRepository.save(blocToDelete);
 
+        // Act
         blocService.removeBloc(savedBloc.getIdBloc());
 
-        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()));
-
-        // Pas de suppression nécessaire ici car l'élément a été supprimé dans le test
+        // Assert
+        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()), "Deleted bloc should not exist in the repository");
     }
 
     @Test
     void testFindByFoyerIdFoyer() {
+        // Arrange
         Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
         blocRepository.save(bloc);
 
+        // Act
         List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
 
-        assertTrue(blocs.isEmpty());  // Tester avec un foyer qui n'existe pas
-
-        // Suppression explicite de l'élément créé
-        blocRepository.delete(bloc);
+        // Assert
+        assertTrue(blocs.isEmpty(), "The result should be empty for a non-existent foyer ID");
     }
 }
