@@ -73,6 +73,6 @@ class BlocServiceTest {
         blocService.removeBloc(1L);
 
         // Assert
-        verify(blocRepository, times(1)).delete(blocToDelete);
+        verify(blocRepository, times(1)).deleteById(1L);
     }
 }
