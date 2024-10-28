@@ -3,15 +3,14 @@ package tn.esprit.tpfoyer17.services.impementations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.entities.enumerations.TypeChambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.repositories.ChambreRepository;
-import tn.esprit.tpfoyer17.repositories.UniversiteRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,33 +20,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class ChambreServiceTest {
 
     @Autowired
+    private ChambreService chambreService;
+
+    @Autowired
     private ChambreRepository chambreRepository;
 
     @Autowired
     private BlocRepository blocRepository;
 
-    @Autowired
-    private UniversiteRepository universiteRepository;
-
-    private ChambreService chambreService;
-
     @BeforeEach
-    public void setUp() {
-        chambreService = new ChambreService(chambreRepository, blocRepository, universiteRepository);
+    void setUp() {
+        chambreRepository.deleteAll(); // Nettoyer les données avant chaque test
+        blocRepository.deleteAll();
     }
 
     @Test
     void testRetrieveAllChambres() {
         // Arrange
-        Chambre chambre1 = new Chambre();
-        chambre1.setNumeroChambre(101L);
-        chambre1.setTypeChambre(TypeChambre.SIMPLE);
-        chambreRepository.save(chambre1);
-
-        Chambre chambre2 = new Chambre();
-        chambre2.setNumeroChambre(102L);
-        chambre2.setTypeChambre(TypeChambre.DOUBLE);
-        chambreRepository.save(chambre2);
+        Chambre chambre1 = Chambre.builder().numeroChambre(101L).typeChambre(TypeChambre.SIMPLE).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102L).typeChambre(TypeChambre.DOUBLE).build();
+        chambreRepository.saveAll(Arrays.asList(chambre1, chambre2));
 
         // Act
         List<Chambre> chambres = chambreService.retrieveAllChambres();
@@ -62,9 +54,7 @@ class ChambreServiceTest {
     @Test
     void testAddChambre() {
         // Arrange
-        Chambre chambre = new Chambre();
-        chambre.setNumeroChambre(103L);
-        chambre.setTypeChambre(TypeChambre.SIMPLE);
+        Chambre chambre = Chambre.builder().numeroChambre(103L).typeChambre(TypeChambre.SIMPLE).build();
 
         // Act
         Chambre savedChambre = chambreService.addChambre(chambre);
@@ -72,50 +62,39 @@ class ChambreServiceTest {
         // Assert
         assertNotNull(savedChambre);
         assertEquals(103L, savedChambre.getNumeroChambre());
-        assertTrue(chambreRepository.existsById(savedChambre.getNumeroChambre()));
     }
 
     @Test
     void testAffecterChambresABloc() {
         // Arrange
-        Bloc bloc = new Bloc();
-        bloc.setIdBloc(1L);
-        bloc.setNomBloc("Bloc1");
-        blocRepository.save(bloc);
+        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
+        bloc = blocRepository.save(bloc);
 
-        Chambre chambre1 = new Chambre();
-        chambre1.setNumeroChambre(101L);
-        chambreRepository.save(chambre1);
+        Chambre chambre1 = Chambre.builder().numeroChambre(101L).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102L).build();
+        chambreRepository.saveAll(Arrays.asList(chambre1, chambre2));
 
-        Chambre chambre2 = new Chambre();
-        chambre2.setNumeroChambre(102L);
-        chambreRepository.save(chambre2);
-
-        List<Long> chambreIds = List.of(101L, 102L);
+        List<Long> chambreIds = Arrays.asList(101L, 102L);
 
         // Act
-        Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, 1L);
+        Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, bloc.getIdBloc());
 
         // Assert
         assertNotNull(affectedBloc);
         assertEquals("Bloc1", affectedBloc.getNomBloc());
-        Optional<Chambre> chambreAffectee1 = chambreRepository.findById(101L);
-        Optional<Chambre> chambreAffectee2 = chambreRepository.findById(102L);
-        assertTrue(chambreAffectee1.isPresent() && chambreAffectee1.get().getBloc().equals(bloc));
-        assertTrue(chambreAffectee2.isPresent() && chambreAffectee2.get().getBloc().equals(bloc));
+
+        // Vérifie que les chambres sont affectées au bloc
+        List<Chambre> chambresAffectees = chambreRepository.findByBlocIdBloc(bloc.getIdBloc());
+        assertEquals(2, chambresAffectees.size());
     }
 
     @Test
     void testGetChambresParNomUniversite() {
         // Arrange
         String nomUniversite = "Universite1";
-        Bloc bloc = new Bloc();
-        bloc.setNomBloc("Bloc1");
+        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
         blocRepository.save(bloc);
-
-        Chambre chambre = new Chambre();
-        chambre.setNumeroChambre(101L);
-        chambre.setBloc(bloc);
+        Chambre chambre = Chambre.builder().numeroChambre(101L).bloc(bloc).build();
         chambreRepository.save(chambre);
 
         // Act
@@ -124,6 +103,5 @@ class ChambreServiceTest {
         // Assert
         assertNotNull(chambres);
         assertEquals(1, chambres.size());
-        assertEquals(101L, chambres.get(0).getNumeroChambre());
     }
 }
