@@ -37,7 +37,7 @@ public class Bloc implements Serializable {
     @JsonIgnore
     // Dans l'entité Bloc
     @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Chambre> chambres = new HashSet<>(); // Initialisation avec un HashSet vide
+    private Set<Chambre> chambres = new HashSet<>(); // Initialisation de la collection chambres
 
 
 

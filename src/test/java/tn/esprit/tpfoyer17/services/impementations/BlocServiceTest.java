@@ -93,6 +93,8 @@ class BlocServiceTest {
     @DisplayName("Devrait supprimer un bloc et nettoyer les chambres associées")
     void testDeleteBloc() {
         Bloc bloc = Bloc.builder().nomBloc("BlocÀSupprimer").build();
+        bloc.setChambres(new HashSet<>()); // Initialiser le Set de chambres
+
         Chambre chambre1 = new Chambre();
         Chambre chambre2 = new Chambre();
 
@@ -163,6 +165,8 @@ class BlocServiceTest {
     @DisplayName("Devrait supprimer un bloc en cascade avec ses chambres")
     void testCascadeDeleteBlocWithChambres() {
         Bloc bloc = Bloc.builder().nomBloc("BlocCascade").build();
+        bloc.setChambres(new HashSet<>()); // Initialiser le Set de chambres
+
         Chambre chambre1 = new Chambre();
         Chambre chambre2 = new Chambre();
 
@@ -179,6 +183,7 @@ class BlocServiceTest {
         assertFalse(chambreRepository.existsById(chambre1.getIdChambre()), "La chambre 1 associée ne doit plus exister");
         assertFalse(chambreRepository.existsById(chambre2.getIdChambre()), "La chambre 2 associée ne doit plus exister");
     }
+
 
     @Test
     @DisplayName("Devrait retourner une valeur par défaut pour un bloc inexistant")
