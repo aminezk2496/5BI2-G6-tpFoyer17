@@ -58,7 +58,7 @@ class BlocServiceTest {
         assertTrue(blocRepository.existsById(savedBloc.getIdBloc()), "Le bloc sauvegardé doit exister dans le dépôt");
     }
 
-   
+
 
     @Test
     @DisplayName("Devrait récupérer un bloc par ID")

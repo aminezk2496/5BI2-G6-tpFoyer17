@@ -21,25 +21,13 @@ public class Bloc implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE) // Prevent manual setting of ID
+    @Setter(AccessLevel.NONE)
     long idBloc;
 
     String nomBloc;
 
     long capaciteBloc;
 
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY) // Use LAZY loading
-    @JsonIgnore
-    Foyer foyer;
-
-    @ToString.Exclude
-    @JsonIgnore
-    // Dans l'entité Bloc
     @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Chambre> chambres = new HashSet<>(); // Initialisation de la collection chambres
-
-
-
-
+    Set<Chambre> chambres = new HashSet<>(); // Each Bloc can have multiple Chambres
 }

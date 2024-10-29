@@ -30,25 +30,11 @@ public class Chambre implements Serializable {
     @Enumerated(EnumType.STRING)
     TypeChambre typeChambre;
 
-    @ToString.Exclude
     @ManyToOne
     @JsonIgnore
-    Bloc bloc;
+    Bloc bloc;  // Each Chambre is associated with one Bloc
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "chambre")  // Ensure there's a field in Reservation that points to Chambre
+    @OneToMany(mappedBy = "chambre", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    Set<Reservation> reservations;
-
-    // If you want to maintain a set of chambres, which is unusual here:
-    @OneToMany(mappedBy = "bloc")  // Change this mapping if needed
-            Set<Chambre> chambres = new HashSet<>();
-
-    public Set<Chambre> getChambres() {
-        if (this.chambres == null) {
-            this.chambres = new HashSet<>();
-        }
-        return this.chambres;
-    }
-
+    Set<Reservation> reservations = new HashSet<>(); // Each Chambre can have multiple Reservations
 }
