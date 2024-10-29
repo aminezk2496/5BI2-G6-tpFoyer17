@@ -213,5 +213,29 @@ class BlocServiceTestMockito {
         assertEquals("BlocWithChambre", foundBloc.getNomBloc());
         verify(blocRepository, times(1)).findByChambresIdChambre(1L);
     }
+    @Test
+    @DisplayName("Should throw exception when retrieving bloc by non-existent ID")
+    void testRetrieveBlocByNonExistentId() {
+        when(blocRepository.findById(999L)).thenReturn(Optional.empty());
 
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.findBlocById(999L);
+        });
+
+        assertEquals("Bloc not found with id: 999", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should return bloc when found by ID")
+    void testRetrieveBlocById() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+
+        Bloc foundBloc = blocService.findBlocById(1L);
+
+        assertNotNull(foundBloc);
+        assertEquals("Bloc1", foundBloc.getNomBloc());
+        verify(blocRepository, times(1)).findById(1L);
+    }
 }
+

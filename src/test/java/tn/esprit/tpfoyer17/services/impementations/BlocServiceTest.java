@@ -48,18 +48,7 @@ class BlocServiceTest {
         assertTrue(blocRepository.existsById(savedBloc.getIdBloc()));
     }
 
-    @Test
-    @DisplayName("Devrait mettre à jour un bloc existant")
-    void testUpdateBloc() {
-        Bloc bloc = Bloc.builder().nomBloc("AncienNom").build();
-        Bloc savedBloc = blocRepository.save(bloc);
-        savedBloc.setNomBloc("NouveauNom");
 
-        Bloc updatedBloc = blocService.updateBloc(savedBloc);
-
-        assertNotNull(updatedBloc);
-        assertEquals("NouveauNom", updatedBloc.getNomBloc());
-    }
 
     @Test
     @DisplayName("Devrait récupérer un bloc par ID")
@@ -80,16 +69,7 @@ class BlocServiceTest {
         assertNull(bloc);
     }
 
-    @Test
-    @DisplayName("Devrait supprimer un bloc")
-    void testDeleteBloc() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocÀSupprimer").build();
-        Bloc savedBloc = blocRepository.save(bloc);
 
-        blocService.removeBloc(savedBloc.getIdBloc());
-
-        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()));
-    }
 
     @Test
     @DisplayName("Devrait lever une exception pour un bloc non trouvé par ID")
@@ -177,7 +157,45 @@ class BlocServiceTest {
         assertNotNull(retrievedBloc, "The retrieved bloc should not be null");
         assertEquals("BlocToRetrieve", retrievedBloc.getNomBloc(), "The bloc name should match the expected name");
     }
+    @Test
+    @DisplayName("Should add a bloc and retrieve it")
+    void testAddAndRetrieveBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("TestBloc").build();
+        blocService.addBloc(bloc);
 
+        Bloc retrievedBloc = blocService.retrieveBloc(bloc.getIdBloc());
 
+        assertNotNull(retrievedBloc);
+        assertEquals("TestBloc", retrievedBloc.getNomBloc());
+    }
+
+    @Test
+    @DisplayName("Should update an existing bloc")
+    void testUpdateBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("InitialBloc").build();
+        bloc = blocService.addBloc(bloc); // Save it first
+
+        bloc.setNomBloc("UpdatedBloc");
+        blocService.updateBloc(bloc); // Update it
+
+        Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
+
+        assertNotNull(updatedBloc);
+        assertEquals("UpdatedBloc", updatedBloc.getNomBloc());
+    }
+
+    @Test
+    @DisplayName("Should delete an existing bloc")
+    void testDeleteBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocToDelete").build();
+        bloc = blocService.addBloc(bloc);
+
+        blocService.removeBloc(bloc.getIdBloc());
+
+        Bloc deletedBloc = blocService.retrieveBloc(bloc.getIdBloc());
+        assertNull(deletedBloc, "Bloc should not be found after deletion");
+    }
 }
+
+
 
