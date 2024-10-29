@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
@@ -18,10 +19,7 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlocService implements IBlocService {
     BlocRepository blocRepository;
-
-    public BlocService() {
-
-    }
+   
 
     @Override
     public List<Bloc> retrieveBlocs() {
