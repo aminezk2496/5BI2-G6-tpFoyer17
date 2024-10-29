@@ -226,5 +226,65 @@ class BlocServiceTest {
         assertEquals(highCapacity, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être la valeur élevée");
     }
 
+    @Test
+    @DisplayName("Devrait ajouter un bloc avec une très grande capacité")
+    void testAddBlocWithVeryHighCapacity() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocLargeCapacity").capaciteBloc(Integer.MAX_VALUE).build();
+        Bloc savedBloc = blocService.addBloc(bloc);
+
+        assertNotNull(savedBloc);
+        assertEquals(Integer.MAX_VALUE, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être la valeur maximale");
+    }
+    @Test
+    @DisplayName("Devrait supprimer un bloc sans chambres associées")
+    void testDeleteBlocWithoutChambres() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocSansChambres").build();
+        bloc = blocRepository.save(bloc);
+
+        blocService.removeBloc(bloc.getIdBloc());
+        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc sans chambres doit être supprimé");
+    }
+    @Test
+    @DisplayName("Devrait ne pas faire de mise à jour si aucun champ n'est modifié")
+    void testUpdateBlocWithNoChanges() {
+        Bloc bloc = Bloc.builder().nomBloc("OriginalName").capaciteBloc(10).build();
+        Bloc savedBloc = blocRepository.save(bloc);
+
+        Bloc result = blocService.updateBloc(savedBloc);
+        assertEquals(savedBloc.getNomBloc(), result.getNomBloc(), "Le nom du bloc doit rester le même si aucun champ n'est modifié");
+        assertEquals(savedBloc.getCapaciteBloc(), result.getCapaciteBloc(), "La capacité du bloc doit rester inchangée");
+    }
+    @Test
+    @DisplayName("Devrait retourner une liste vide lorsque aucun bloc n'existe")
+    void testRetrieveAllBlocsWhenNoBlocsExist() {
+        List<Bloc> blocs = blocService.retrieveBlocs();
+        assertTrue(blocs.isEmpty(), "La liste des blocs doit être vide si aucun bloc n'existe");
+    }
+    @Test
+    @DisplayName("Devrait ajouter un bloc avec un nom de longueur maximale")
+    void testAddBlocWithMaxLengthName() {
+        String longName = "A".repeat(255); // Assuming 255 is the maximum length allowed
+        Bloc bloc = Bloc.builder().nomBloc(longName).build();
+
+        Bloc savedBloc = blocService.addBloc(bloc);
+
+        assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
+        assertEquals(longName, savedBloc.getNomBloc(), "Le nom du bloc doit être de longueur maximale");
+    }
+    @Test
+    @DisplayName("Devrait lever une exception pour la mise à jour d'un bloc avec un ID invalide")
+    void testUpdateBlocWithInvalidId() {
+        Bloc bloc = Bloc.builder().idBloc(-1L).nomBloc("InvalidID").build();
+
+        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(bloc));
+        assertEquals("Bloc not found with id: -1", exception.getMessage(), "Le message d'exception doit correspondre");
+    }
+
+    @Test
+    @DisplayName("Devrait retourner une liste vide pour un ID de foyer valide sans blocs")
+    void testFindByValidFoyerIdFoyerNoBlocs() {
+        List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L); // Assuming 1L is a valid ID but with no blocs
+        assertTrue(blocs.isEmpty(), "La liste des blocs doit être vide pour un ID de foyer sans blocs");
+    }
 
 }

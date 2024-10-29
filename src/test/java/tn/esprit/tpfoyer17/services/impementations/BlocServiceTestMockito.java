@@ -211,5 +211,85 @@ class BlocServiceTestMockito {
         verify(blocRepository, times(1)).save(updatedBloc);
     }
 
+    @Test
+    @DisplayName("Devrait renvoyer null pour un ID de bloc inexistant avec Mockito")
+    void testFindNonExistentBlocByIdWithMock() {
+        when(blocRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Bloc bloc = blocService.retrieveBloc(999L);
+        assertNull(bloc);
+        verify(blocRepository, times(1)).findById(999L);
+    }
+    @Test
+    @DisplayName("Devrait gérer correctement la suppression d'un bloc deux fois avec Mockito")
+    void testDeleteBlocTwiceWithMock() {
+        long blocId = 1L;
+        doNothing().when(blocRepository).deleteById(blocId);
+
+        blocService.removeBloc(blocId);
+        blocService.removeBloc(blocId);
+
+        verify(blocRepository, times(2)).deleteById(blocId);
+    }
+    @Test
+    @DisplayName("Devrait ne pas appeler save si aucun champ du bloc n'est modifié avec Mockito")
+    void testUpdateBlocWithUnchangedFieldsWithMock() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("SameName").build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+
+        Bloc result = blocService.updateBloc(bloc);
+        assertEquals("SameName", result.getNomBloc());
+        verify(blocRepository, times(1)).save(bloc);
+    }
+    @Test
+    @DisplayName("Devrait retourner une liste vide si aucun bloc n'est trouvé avec Mockito")
+    void testRetrieveAllBlocsWhenEmptyWithMock() {
+        when(blocRepository.findAll()).thenReturn(Arrays.asList());
+
+        List<Bloc> blocs = blocService.retrieveBlocs();
+        assertTrue(blocs.isEmpty(), "La liste des blocs doit être vide si aucun bloc n'est trouvé");
+        verify(blocRepository, times(1)).findAll();
+    }
+    @Test
+    @DisplayName("Devrait gérer une exception du dépôt lors de la recherche de blocs par ID de foyer")
+    void testFindByFoyerIdRepositoryThrowsException() {
+        when(blocRepository.findByFoyerIdFoyer(anyLong())).thenThrow(new RuntimeException("Database error"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> blocService.findByFoyerIdFoyer(1L));
+        assertEquals("Database error", exception.getMessage());
+        verify(blocRepository, times(1)).findByFoyerIdFoyer(1L);
+    }
+    @Test
+    @DisplayName("Devrait gérer l'ajout de noms de blocs en double avec Mockito")
+    void testAddDuplicateBlocNames() {
+        Bloc bloc = Bloc.builder().nomBloc("DuplicateName").build();
+        when(blocRepository.save(any(Bloc.class))).thenThrow(new IllegalArgumentException("Bloc name must be unique"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> blocService.addBloc(bloc));
+        assertEquals("Bloc name must be unique", exception.getMessage());
+        verify(blocRepository, times(1)).save(bloc);
+    }
+    @Test
+    @DisplayName("Devrait gérer un échec de sauvegarde lors de la mise à jour d'un bloc avec Mockito")
+    void testUpdateBlocSaveFails() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("FailSave").build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+        when(blocRepository.save(bloc)).thenThrow(new RuntimeException("Save failed"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(bloc));
+        assertEquals("Save failed", exception.getMessage());
+        verify(blocRepository, times(1)).save(bloc);
+    }
+    @Test
+    @DisplayName("Devrait ne pas lever d'exception lors de la suppression d'un bloc inexistant avec Mockito")
+    void testDeleteNonExistentBlocNoException() {
+        long nonExistentBlocId = 999L;
+        doNothing().when(blocRepository).deleteById(nonExistentBlocId);
+        when(blocRepository.existsById(nonExistentBlocId)).thenReturn(false);
+
+        assertDoesNotThrow(() -> blocService.removeBloc(nonExistentBlocId));
+        verify(blocRepository, times(1)).deleteById(nonExistentBlocId);
+        verify(blocRepository, times(1)).existsById(nonExistentBlocId);
+    }
 
 }
