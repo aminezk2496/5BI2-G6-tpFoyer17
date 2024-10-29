@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -34,8 +35,10 @@ public class Bloc implements Serializable {
 
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Added cascade and LAZY fetch
-    Set<Chambre> chambres;
+    // Dans l'entité Bloc
+    @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Chambre> chambres = new HashSet<>(); // Initialisation avec un HashSet vide
+
 
 
 

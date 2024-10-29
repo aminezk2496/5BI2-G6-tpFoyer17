@@ -90,15 +90,24 @@ class BlocServiceTest {
     }
 
     @Test
-    @DisplayName("Devrait supprimer un bloc")
+    @DisplayName("Devrait supprimer un bloc et nettoyer les chambres associées")
     void testDeleteBloc() {
         Bloc bloc = Bloc.builder().nomBloc("BlocÀSupprimer").build();
-        Bloc savedBloc = blocRepository.save(bloc);
+        Chambre chambre1 = new Chambre();
+        Chambre chambre2 = new Chambre();
 
-        blocService.removeBloc(savedBloc.getIdBloc());
+        chambre1.setBloc(bloc);
+        chambre2.setBloc(bloc);
 
-        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()), "Le bloc supprimé ne doit pas exister dans le dépôt");
+        bloc.getChambres().add(chambre1);
+        bloc.getChambres().add(chambre2);
+        bloc = blocRepository.save(bloc);
+
+        blocService.removeBloc(bloc.getIdBloc());
+
+        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc supprimé ne doit pas exister dans le dépôt");
     }
+
 
     @Test
     @DisplayName("Devrait renvoyer une liste vide pour un ID de foyer inexistant")
@@ -139,29 +148,38 @@ class BlocServiceTest {
         assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
     }
     @Test
-    @DisplayName("Devrait ne pas générer d'erreur lors de la suppression d'un bloc inexistant")
+    @DisplayName("Devrait lever une exception pour la suppression d'un bloc inexistant")
     void testDeleteNonExistentBloc() {
-        // Act & Assert
-        assertDoesNotThrow(() -> blocService.removeBloc(999L), "La suppression d'un bloc inexistant ne doit pas lever d'exception");
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.removeBloc(999L);
+        });
+
+        assertEquals("Bloc not found", exception.getMessage(), "Le message d'exception doit correspondre");
     }
+
 
 
     @Test
-    @DisplayName("Devrait supprimer un bloc et ses chambres associées en cascade")
+    @DisplayName("Devrait supprimer un bloc en cascade avec ses chambres")
     void testCascadeDeleteBlocWithChambres() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocAvecChambres").build();
-        bloc = blocRepository.save(bloc);
+        Bloc bloc = Bloc.builder().nomBloc("BlocCascade").build();
+        Chambre chambre1 = new Chambre();
+        Chambre chambre2 = new Chambre();
 
-        Chambre chambre1 = Chambre.builder().numeroChambre(101).bloc(bloc).build();
-        Chambre chambre2 = Chambre.builder().numeroChambre(102).bloc(bloc).build();
-        chambreRepository.saveAll(Arrays.asList(chambre1, chambre2));
+        chambre1.setBloc(bloc);
+        chambre2.setBloc(bloc);
+
+        bloc.getChambres().add(chambre1);
+        bloc.getChambres().add(chambre2);
+        bloc = blocRepository.save(bloc);
 
         blocService.removeBloc(bloc.getIdBloc());
 
-        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc ne doit plus exister après suppression");
-        assertFalse(chambreRepository.existsById(chambre1.getIdChambre()), "La chambre 101 doit être supprimée en cascade");
-        assertFalse(chambreRepository.existsById(chambre2.getIdChambre()), "La chambre 102 doit être supprimée en cascade");
+        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc supprimé avec cascade ne doit pas exister");
+        assertFalse(chambreRepository.existsById(chambre1.getIdChambre()), "La chambre 1 associée ne doit plus exister");
+        assertFalse(chambreRepository.existsById(chambre2.getIdChambre()), "La chambre 2 associée ne doit plus exister");
     }
+
     @Test
     @DisplayName("Devrait retourner une valeur par défaut pour un bloc inexistant")
     void testRetrieveNonExistentBlocWithDefault() {
