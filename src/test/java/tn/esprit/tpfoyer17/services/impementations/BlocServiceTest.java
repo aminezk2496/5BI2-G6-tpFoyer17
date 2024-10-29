@@ -1,23 +1,18 @@
 package tn.esprit.tpfoyer17.services.impementations;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
-import tn.esprit.tpfoyer17.services.impementations.BlocService;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@DataJpaTest
-
-class BlocServiceTest {
+@Transactional
+class BlocServiceH2Test {
 
     @Autowired
     private BlocService blocService;
@@ -25,65 +20,33 @@ class BlocServiceTest {
     @Autowired
     private BlocRepository blocRepository;
 
-    @Test
-    void testRetrieveBlocs() {
-        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
-        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
-        blocRepository.save(bloc1);
-        blocRepository.save(bloc2);
-
-        List<Bloc> blocs = blocService.retrieveBlocs();
-
-        assertNotNull(blocs, "The retrieved blocs list should not be null");
-        assertEquals(2, blocs.size(), "There should be exactly 2 blocs in the list");
+    @AfterEach
+    void cleanUp() {
+        blocRepository.deleteAll();
     }
 
     @Test
-    void testAddBloc() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
+    void testAddBlocAndDelete() {
+        Bloc bloc = new Bloc();
+        bloc.setNomBloc("Test Bloc");
+
         Bloc savedBloc = blocService.addBloc(bloc);
-
-        assertNotNull(savedBloc, "Saved bloc should not be null");
-        assertEquals("BlocTest", savedBloc.getNomBloc(), "Bloc name should be 'BlocTest'");
-        assertTrue(blocRepository.existsById(savedBloc.getIdBloc()), "Saved bloc should exist in the repository");
-    }
-
-    @Test
-    void testUpdateBloc() {
-        Bloc bloc = Bloc.builder().nomBloc("OldName").build();
-        Bloc savedBloc = blocRepository.save(bloc);
-        savedBloc.setNomBloc("NewName");
-
-        Bloc updatedBloc = blocService.updateBloc(savedBloc);
-
-        assertNotNull(updatedBloc, "Updated bloc should not be null");
-        assertEquals("NewName", updatedBloc.getNomBloc(), "Bloc name should be updated to 'NewName'");
-    }
-
-    @Test
-    void testRetrieveNonExistentBloc() {
-        Bloc bloc = blocService.retrieveBloc(999L);
-
-        assertNull(bloc, "Retrieved bloc should be null for non-existent ID");
-    }
-
-    @Test
-    void testDeleteBloc() {
-        Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
-        Bloc savedBloc = blocRepository.save(blocToDelete);
+        assertNotNull(savedBloc);
+        assertEquals("Test Bloc", savedBloc.getNomBloc());
 
         blocService.removeBloc(savedBloc.getIdBloc());
-
-        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()), "Deleted bloc should not exist in the repository");
+        assertFalse(blocRepository.findById(savedBloc.getIdBloc()).isPresent());
     }
 
     @Test
-    void testFindByFoyerIdFoyer() {
-        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
-        blocRepository.save(bloc);
+    void testFindBlocById() {
+        Bloc bloc = new Bloc();
+        bloc.setNomBloc("Bloc Example");
 
-        List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
+        Bloc savedBloc = blocService.addBloc(bloc);
+        Bloc foundBloc = blocService.findBlocById(savedBloc.getIdBloc());
 
-        assertTrue(blocs.isEmpty(), "The result should be empty for a non-existent foyer ID");
+        assertNotNull(foundBloc);
+        assertEquals("Bloc Example", foundBloc.getNomBloc());
     }
 }

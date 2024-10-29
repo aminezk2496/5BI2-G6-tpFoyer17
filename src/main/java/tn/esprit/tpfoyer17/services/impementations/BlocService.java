@@ -10,6 +10,7 @@ import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.services.interfaces.IBlocService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -56,5 +57,10 @@ public class BlocService implements IBlocService {
     @Override
     public Bloc findByChambresIdChambre(Long idChambre) {
         return blocRepository.findByChambresIdChambre(idChambre);
+    }
+
+    public Bloc findBlocById(long id) {
+        Optional<Bloc> blocOptional = blocRepository.findById(id);
+        return blocOptional.orElseThrow(() -> new RuntimeException("Bloc not found with id: " + id));
     }
 }
