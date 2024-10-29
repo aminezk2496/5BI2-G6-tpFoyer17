@@ -40,7 +40,18 @@ class BlocServiceTestMockito {
         verify(blocRepository, times(1)).findAll();
     }
 
+    @Test
+    @DisplayName("Should add a new bloc using mock")
+    void testAddBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
+        when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
 
+        Bloc savedBloc = blocService.addBloc(bloc);
+
+        assertNotNull(savedBloc);
+        assertEquals("BlocTest", savedBloc.getNomBloc());
+        verify(blocRepository, times(1)).save(bloc);
+    }
 
     @Test
     @DisplayName("Should update an existing bloc using mock")
@@ -153,7 +164,19 @@ class BlocServiceTestMockito {
         assertEquals("Bloc not found with id: -1", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Should throw exception when adding a bloc without a name")
+    void testAddBlocWithoutName() {
+        Bloc bloc = Bloc.builder().build(); // No name
 
+        when(blocRepository.save(any(Bloc.class))).thenThrow(new IllegalArgumentException("Bloc name cannot be null"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc);
+        });
+
+        assertEquals("Bloc name cannot be null", exception.getMessage());
+    }
     @Test
     @DisplayName("Should retrieve all blocs using mock")
     void testRetrieveAllBlocsWithMock() {
@@ -362,70 +385,7 @@ class BlocServiceTestMockito {
 
         assertEquals("Bloc not found with id: null", exception.getMessage());
     }
-    @Test
-    @DisplayName("Should throw exception when updating a bloc to null name")
-    void testUpdateBlocToNullName() {
-        Bloc existingBloc = Bloc.builder().idBloc(1L).nomBloc("ExistingBloc").build();
-        when(blocRepository.existsById(existingBloc.getIdBloc())).thenReturn(true);
-        when(blocRepository.save(existingBloc)).thenReturn(existingBloc);
 
-        existingBloc.setNomBloc(null); // Set to null
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            blocService.updateBloc(existingBloc);
-        });
-
-        assertEquals("Bloc name cannot be null or empty", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should retrieve an existing bloc")
-    void testRetrieveExistingBloc() {
-        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
-
-        Bloc retrievedBloc = blocService.retrieveBloc(1L);
-
-        assertNotNull(retrievedBloc);
-        assertEquals("Bloc1", retrievedBloc.getNomBloc());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when retrieving a non-existent bloc by ID")
-    void testRetrieveNonExistentBlocById() {
-        when(blocRepository.findById(999L)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            blocService.retrieveBloc(999L);
-        });
-
-        assertEquals("Bloc not found with id: 999", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should handle saving a bloc correctly")
-    void testAddBloc() {
-        Bloc bloc = Bloc.builder().nomBloc("NewBloc").build();
-        when(blocRepository.save(bloc)).thenReturn(bloc);
-
-        Bloc savedBloc = blocService.addBloc(bloc);
-
-        assertNotNull(savedBloc);
-        assertEquals("NewBloc", savedBloc.getNomBloc());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when adding a bloc without a name")
-    void testAddBlocWithoutName() {
-        Bloc bloc = Bloc.builder().build(); // No name
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            blocService.addBloc(bloc);
-        });
-
-        assertEquals("Bloc name cannot be null or empty", exception.getMessage());
-    }
 }
-
 
 

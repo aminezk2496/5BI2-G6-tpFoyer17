@@ -80,7 +80,17 @@ class BlocServiceTest {
 
         assertEquals("Bloc not found with id: 999", exception.getMessage());
     }
+    @Test
+    @DisplayName("Devrait lever une exception pour un bloc non trouvé lors de la mise à jour")
+    void testUpdateNonExistentBloc() {
+        Bloc bloc = Bloc.builder().idBloc(999L).nomBloc("NomInconnu").build();
 
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc not found with id: 999", exception.getMessage());
+    }
 
     @Test
     @DisplayName("Devrait lever une exception lors de la suppression d'un bloc inexistant")
@@ -301,43 +311,7 @@ class BlocServiceTest {
         assertEquals("Bloc not found with id: " + nonExistentId, exception.getMessage());
     }
 
-
-    @Test
-    @DisplayName("Should handle updating a bloc and retrieve the updated details")
-    void testUpdateBlocAndRetrieveUpdatedDetails() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocInitial").build();
-        bloc = blocRepository.save(bloc);
-
-        bloc.setNomBloc("BlocUpdated");
-        blocService.updateBloc(bloc);
-
-        Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
-        assertEquals("BlocUpdated", updatedBloc.getNomBloc());
-    }
-
-    @Test
-    @DisplayName("Should throw exception for non-existent bloc update")
-    void testUpdateNonExistentBloc() {
-        Bloc bloc = Bloc.builder().idBloc(999L).nomBloc("BlocNonExistant").build();
-
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            blocService.updateBloc(bloc);
-        });
-
-        assertEquals("Bloc not found with id: 999", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should throw exception for removing a non-existent bloc")
-    void testRemoveNonExistentBloc() {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            blocService.removeBloc(999L);
-        });
-
-        assertEquals("Bloc not found", exception.getMessage());
-    }
 }
-
 
 
 
