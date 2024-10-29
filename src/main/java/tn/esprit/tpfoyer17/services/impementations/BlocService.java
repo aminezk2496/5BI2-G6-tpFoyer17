@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
@@ -20,29 +19,22 @@ import java.util.Optional;
 public class BlocService implements IBlocService {
     BlocRepository blocRepository;
 
-
     @Override
     public List<Bloc> retrieveBlocs() {
         return (List<Bloc>) blocRepository.findAll();
     }
 
     @Override
-    public void updateBloc(Long id, Bloc newBloc) {
-        if (id == null || !blocRepository.existsById(id)) {
-            throw new RuntimeException("Invalid ID");
-        }
-
+    public Bloc updateBloc(Long id, Bloc bloc) {
         Bloc existingBloc = blocRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bloc not found"));
+                .orElseThrow(() -> new RuntimeException("Bloc not found with id: " + id));
 
-        existingBloc.setNomBloc(newBloc.getNomBloc());
-        existingBloc.setCapaciteBloc(newBloc.getCapaciteBloc());
-        // Save the updated Bloc back to the repository
-        blocRepository.save(existingBloc);
+        // Update fields
+        existingBloc.setNomBloc(bloc.getNomBloc());
+        existingBloc.setCapaciteBloc(bloc.getCapaciteBloc());
+
+        return blocRepository.save(existingBloc);
     }
-
-
-
 
     @Override
     public Bloc addBloc(Bloc bloc) {
@@ -51,6 +43,7 @@ public class BlocService implements IBlocService {
         }
         return blocRepository.save(bloc);
     }
+
     @Override
     public Bloc retrieveBloc(long idBloc) {
         return blocRepository.findById(idBloc).orElse(null);
@@ -58,11 +51,11 @@ public class BlocService implements IBlocService {
 
     @Override
     public void removeBloc(long idBloc) {
-        Bloc bloc = blocRepository.findById(idBloc).orElseThrow(() -> new RuntimeException("Bloc not found"));
+        Bloc bloc = blocRepository.findById(idBloc)
+                .orElseThrow(() -> new RuntimeException("Bloc not found"));
         bloc.getChambres().clear();  // Clear chambres to avoid foreign key constraint issues
         blocRepository.delete(bloc);
     }
-
 
     @Override
     public List<Bloc> findByFoyerIdFoyer(long idFoyer) {

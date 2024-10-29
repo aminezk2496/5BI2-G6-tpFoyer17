@@ -6,10 +6,11 @@ import java.util.List;
 
 public interface IBlocService {
     List<Bloc> retrieveBlocs();
-    void updateBloc(Long id, Bloc newBloc);  // Ensure this matches the implementation
     Bloc addBloc(Bloc bloc);
     Bloc retrieveBloc(long idBloc);
     void removeBloc(long idBloc);
     List<Bloc> findByFoyerIdFoyer(long idFoyer);
     Bloc findByChambresIdChambre(Long idChambre);
+    Bloc updateBloc(Long id, Bloc bloc);
+
 }
