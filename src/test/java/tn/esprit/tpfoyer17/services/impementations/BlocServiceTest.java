@@ -1,18 +1,22 @@
 package tn.esprit.tpfoyer17.services.impementations;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 class BlocServiceTest {
 
     @Autowired
@@ -22,6 +26,7 @@ class BlocServiceTest {
     private BlocRepository blocRepository;
 
     @Test
+    @DisplayName("Should retrieve all blocs")
     void testRetrieveBlocs() {
         // Arrange
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
@@ -40,6 +45,7 @@ class BlocServiceTest {
     }
 
     @Test
+    @DisplayName("Should add a new bloc")
     void testAddBloc() {
         // Arrange
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
@@ -54,6 +60,7 @@ class BlocServiceTest {
     }
 
     @Test
+    @DisplayName("Should update an existing bloc")
     void testUpdateBloc() {
         // Arrange
         Bloc bloc = Bloc.builder().nomBloc("OldName").build();
@@ -69,6 +76,7 @@ class BlocServiceTest {
     }
 
     @Test
+    @DisplayName("Should return null for non-existent bloc ID")
     void testRetrieveNonExistentBloc() {
         // Act
         Bloc bloc = blocService.retrieveBloc(999L);
@@ -78,6 +86,7 @@ class BlocServiceTest {
     }
 
     @Test
+    @DisplayName("Should delete a bloc")
     void testDeleteBloc() {
         // Arrange
         Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
@@ -91,6 +100,7 @@ class BlocServiceTest {
     }
 
     @Test
+    @DisplayName("Should return empty result for non-existent foyer ID")
     void testFindByFoyerIdFoyer() {
         // Arrange
         Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
@@ -103,4 +113,3 @@ class BlocServiceTest {
         assertTrue(blocs.isEmpty(), "The result should be empty for a non-existent foyer ID");
     }
 }
-

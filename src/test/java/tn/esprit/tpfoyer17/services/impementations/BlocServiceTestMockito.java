@@ -1,10 +1,10 @@
 package tn.esprit.tpfoyer17.services.impementations;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import tn.esprit.tpfoyer17.entities.Bloc;
@@ -26,12 +26,8 @@ class BlocServiceTestMockito {
     @Mock
     private BlocRepository blocRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
+    @DisplayName("Should retrieve all blocs using mock")
     void testRetrieveBlocs() {
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
         Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
@@ -45,6 +41,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should add a new bloc using mock")
     void testAddBloc() {
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
         when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
@@ -57,6 +54,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should update an existing bloc using mock")
     void testUpdateBloc() {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("UpdatedBloc").build();
         when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
@@ -69,6 +67,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should retrieve bloc by ID using mock")
     void testRetrieveBloc() {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
@@ -81,6 +80,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should return null for non-existent bloc ID using mock")
     void testRetrieveNonExistentBloc() {
         when(blocRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -91,6 +91,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should delete bloc by ID using mock")
     void testDeleteBloc() {
         long blocId = 1L;
         blocService.removeBloc(blocId);
@@ -99,6 +100,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should retrieve blocs by foyer ID using mock")
     void testFindByFoyerIdFoyer() {
         Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
         Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
@@ -112,6 +114,7 @@ class BlocServiceTestMockito {
     }
 
     @Test
+    @DisplayName("Should retrieve bloc by chambre ID using mock")
     void testFindByChambresIdChambre() {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("BlocWithChambre").build();
         when(blocRepository.findByChambresIdChambre(1L)).thenReturn(bloc);
@@ -123,19 +126,3 @@ class BlocServiceTestMockito {
         verify(blocRepository, times(1)).findByChambresIdChambre(1L);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
