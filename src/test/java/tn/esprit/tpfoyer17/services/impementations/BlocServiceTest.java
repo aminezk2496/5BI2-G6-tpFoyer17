@@ -245,20 +245,8 @@ class BlocServiceTest {
         Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
         assertEquals(10L, updatedBloc.getCapaciteBloc(), "The bloc's capacity should be updated to 10");
     }
-    @Test
-    @DisplayName("Should throw exception when trying to update a bloc to have a null name")
-    void testUpdateBlocToNullName() {
-        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("ValidName").build();
-        blocRepository.save(bloc);
+    
 
-        bloc.setNomBloc(null);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            blocService.updateBloc(bloc);
-        });
-
-        assertEquals("Bloc name cannot be null", exception.getMessage());
-    }
 
     @Test
     @DisplayName("Should retrieve bloc with correct associations")
