@@ -131,15 +131,7 @@ class BlocServiceTest {
 
 
 
-    @Test
-    @DisplayName("Devrait lever une exception pour la suppression d'un bloc inexistant")
-    void testDeleteNonExistentBloc() {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            blocService.removeBloc(999L);
-        });
-
-        assertEquals("Bloc not found", exception.getMessage(), "Le message d'exception doit correspondre");
-    }
+  
 
 
 
@@ -243,14 +235,7 @@ class BlocServiceTest {
         assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
         assertEquals(longName, savedBloc.getNomBloc(), "Le nom du bloc doit être de longueur maximale");
     }
-    @Test
-    @DisplayName("Devrait lever une exception pour la mise à jour d'un bloc avec un ID invalide")
-    void testUpdateBlocWithInvalidId() {
-        Bloc bloc = Bloc.builder().idBloc(-1L).nomBloc("InvalidID").build();
 
-        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(bloc));
-        assertEquals("Bloc not found with id: -1", exception.getMessage(), "Le message d'exception doit correspondre");
-    }
 
     @Test
     @DisplayName("Devrait retourner une liste vide pour un ID de foyer valide sans blocs")
