@@ -136,5 +136,49 @@ class BlocServiceTestMockito {
         assertDoesNotThrow(() -> blocService.removeBloc(nonExistentBlocId));
         verify(blocRepository, times(1)).deleteById(nonExistentBlocId);
     }
+    @Test
+    @DisplayName("Devrait mettre à jour seulement les champs modifiés dans le bloc")
+    void testUpdateBlocFieldsUnchanged() {
+        Bloc existingBloc = Bloc.builder().idBloc(1L).nomBloc("AncienNom").capaciteBloc(100).build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(existingBloc));
+
+        Bloc updatedBloc = existingBloc;
+        updatedBloc.setNomBloc("NouveauNom");  // Modification d’un seul champ
+        when(blocRepository.save(any(Bloc.class))).thenReturn(updatedBloc);
+
+        Bloc result = blocService.updateBloc(updatedBloc);
+
+        assertEquals("NouveauNom", result.getNomBloc(), "Le nom du bloc doit être mis à jour");
+        assertEquals(100, result.getCapaciteBloc(), "La capacité du bloc doit rester inchangée");
+        verify(blocRepository, times(1)).save(updatedBloc);
+    }
+
+    @Test
+    @DisplayName("Devrait lever une exception pour un nom de bloc en double")
+    void testDuplicateBlocName() {
+        Bloc bloc1 = Bloc.builder().nomBloc("NomUnique").build();
+        when(blocRepository.save(bloc1)).thenThrow(new IllegalArgumentException("Nom de bloc en double"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc1);
+        });
+
+        assertEquals("Nom de bloc en double", exception.getMessage());
+        verify(blocRepository, times(1)).save(bloc1);
+    }
+    @Test
+    @DisplayName("Devrait lever une exception pour la mise à jour d'un bloc inexistant")
+    void testUpdateNonExistentBloc() {
+        Bloc bloc = Bloc.builder().idBloc(999L).nomBloc("NonExistant").build();
+        when(blocRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
+        verify(blocRepository, never()).save(bloc);
+    }
+
 
 }

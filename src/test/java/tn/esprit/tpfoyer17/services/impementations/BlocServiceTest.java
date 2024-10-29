@@ -11,6 +11,7 @@ import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.repositories.ChambreRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -141,6 +142,34 @@ class BlocServiceTest {
     void testDeleteNonExistentBloc() {
         // Act & Assert
         assertDoesNotThrow(() -> blocService.removeBloc(999L), "La suppression d'un bloc inexistant ne doit pas lever d'exception");
+    }
+
+    @Test
+    @DisplayName("Devrait lancer une exception pour un bloc avec un nom nul")
+    void testAddBlocWithNullName() {
+        Bloc bloc = Bloc.builder().nomBloc(null).build();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc);
+        });
+
+        assertEquals("Le nom du bloc ne peut pas être nul", exception.getMessage());
+    }
+    @Test
+    @DisplayName("Devrait supprimer un bloc et ses chambres associées en cascade")
+    void testCascadeDeleteBlocWithChambres() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocAvecChambres").build();
+        bloc = blocRepository.save(bloc);
+
+        Chambre chambre1 = Chambre.builder().numeroChambre(101).bloc(bloc).build();
+        Chambre chambre2 = Chambre.builder().numeroChambre(102).bloc(bloc).build();
+        chambreRepository.saveAll(Arrays.asList(chambre1, chambre2));
+
+        blocService.removeBloc(bloc.getIdBloc());
+
+        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc ne doit plus exister après suppression");
+        assertFalse(chambreRepository.existsById(chambre1.getIdChambre()), "La chambre 101 doit être supprimée en cascade");
+        assertFalse(chambreRepository.existsById(chambre2.getIdChambre()), "La chambre 102 doit être supprimée en cascade");
     }
 
 }
