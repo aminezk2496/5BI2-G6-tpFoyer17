@@ -19,7 +19,7 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlocService implements IBlocService {
     BlocRepository blocRepository;
-   
+
 
     @Override
     public List<Bloc> retrieveBlocs() {
