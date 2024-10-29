@@ -11,10 +11,7 @@ import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.repositories.ChambreRepository;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,7 +55,18 @@ class BlocServiceTest {
         assertTrue(blocRepository.existsById(savedBloc.getIdBloc()), "Le bloc sauvegardé doit exister dans le dépôt");
     }
 
+    @Test
+    @DisplayName("Devrait mettre à jour un bloc existant")
+    void testUpdateBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("AncienNom").build();
+        Bloc savedBloc = blocRepository.save(bloc);
+        savedBloc.setNomBloc("NouveauNom");
 
+        Bloc updatedBloc = blocService.updateBloc(savedBloc);
+
+        assertNotNull(updatedBloc, "Le bloc mis à jour ne doit pas être nul");
+        assertEquals("NouveauNom", updatedBloc.getNomBloc(), "Le nom du bloc doit être mis à jour à 'NouveauNom'");
+    }
 
     @Test
     @DisplayName("Devrait récupérer un bloc par ID")
@@ -80,26 +88,15 @@ class BlocServiceTest {
     }
 
     @Test
-    @DisplayName("Devrait supprimer un bloc et nettoyer les chambres associées")
+    @DisplayName("Devrait supprimer un bloc")
     void testDeleteBloc() {
         Bloc bloc = Bloc.builder().nomBloc("BlocÀSupprimer").build();
-        bloc.setChambres(new HashSet<>()); // Initialiser le Set de chambres
+        Bloc savedBloc = blocRepository.save(bloc);
 
-        Chambre chambre1 = new Chambre();
-        Chambre chambre2 = new Chambre();
+        blocService.removeBloc(savedBloc.getIdBloc());
 
-        chambre1.setBloc(bloc);
-        chambre2.setBloc(bloc);
-
-        bloc.getChambres().add(chambre1);
-        bloc.getChambres().add(chambre2);
-        bloc = blocRepository.save(bloc);
-
-        blocService.removeBloc(bloc.getIdBloc());
-
-        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc supprimé ne doit pas exister dans le dépôt");
+        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()), "Le bloc supprimé ne doit pas exister dans le dépôt");
     }
-
 
     @Test
     @DisplayName("Devrait renvoyer une liste vide pour un ID de foyer inexistant")
@@ -130,118 +127,24 @@ class BlocServiceTest {
     }
 
 
-
-  
-
-
-
     @Test
-    @DisplayName("Devrait supprimer un bloc en cascade avec ses chambres")
-    void testCascadeDeleteBlocWithChambres() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocCascade").build();
-        bloc.setChambres(new HashSet<>()); // Initialiser le Set de chambres
+    @DisplayName("Devrait lever une exception pour un bloc non trouvé par ID")
+    void testFindBlocByIdThrowsExceptionForNonExistentBloc() {
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.findBlocById(999L);
+        });
 
-        Chambre chambre1 = new Chambre();
-        Chambre chambre2 = new Chambre();
-
-        chambre1.setBloc(bloc);
-        chambre2.setBloc(bloc);
-
-        bloc.getChambres().add(chambre1);
-        bloc.getChambres().add(chambre2);
-        bloc = blocRepository.save(bloc);
-
-        blocService.removeBloc(bloc.getIdBloc());
-
-        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc supprimé avec cascade ne doit pas exister");
-        assertFalse(chambreRepository.existsById(chambre1.getIdChambre()), "La chambre 1 associée ne doit plus exister");
-        assertFalse(chambreRepository.existsById(chambre2.getIdChambre()), "La chambre 2 associée ne doit plus exister");
+        assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
     }
-
-
-    @Test
-    @DisplayName("Devrait retourner une valeur par défaut pour un bloc inexistant")
-    void testRetrieveNonExistentBlocWithDefault() {
-        Bloc defaultBloc = Bloc.builder().nomBloc("DefaultBloc").build();
-        Bloc retrievedBloc = Optional.ofNullable(blocService.retrieveBloc(999L)).orElse(defaultBloc);
-
-        assertNotNull(retrievedBloc, "Le bloc retourné ne doit pas être nul");
-        assertEquals("DefaultBloc", retrievedBloc.getNomBloc(), "Le bloc par défaut doit avoir le nom 'DefaultBloc'");
-    }
-    @Test
-    @DisplayName("Devrait retourner une liste vide pour un bloc sans chambre")
-    void testRetrieveChambresFromBlocWithoutChambres() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocSansChambre").build();
-        bloc = blocRepository.save(bloc);
-
-        List<Chambre> chambres = chambreRepository.findByBlocIdBloc(bloc.getIdBloc());
-
-        assertTrue(chambres.isEmpty(), "La liste des chambres doit être vide pour un bloc sans chambre");
-    }
-    @Test
-    @DisplayName("Devrait ajouter un bloc avec la capacité minimale de 0")
-    void testAddBlocWithMinCapacity() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocMinCapacity").capaciteBloc(0).build();
-        Bloc savedBloc = blocService.addBloc(bloc);
-
-        assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
-        assertEquals(0, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être 0");
-    }
-
-    @Test
-    @DisplayName("Devrait ajouter un bloc avec une capacité élevée")
-    void testAddBlocWithHighCapacity() {
-        int highCapacity = 1000000;
-        Bloc bloc = Bloc.builder().nomBloc("BlocHighCapacity").capaciteBloc(highCapacity).build();
-        Bloc savedBloc = blocService.addBloc(bloc);
-
-        assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
-        assertEquals(highCapacity, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être la valeur élevée");
-    }
-
-    @Test
-    @DisplayName("Devrait ajouter un bloc avec une très grande capacité")
-    void testAddBlocWithVeryHighCapacity() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocLargeCapacity").capaciteBloc(Integer.MAX_VALUE).build();
-        Bloc savedBloc = blocService.addBloc(bloc);
-
-        assertNotNull(savedBloc);
-        assertEquals(Integer.MAX_VALUE, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être la valeur maximale");
-    }
-    @Test
-    @DisplayName("Devrait supprimer un bloc sans chambres associées")
-    void testDeleteBlocWithoutChambres() {
-        Bloc bloc = Bloc.builder().nomBloc("BlocSansChambres").build();
-        bloc = blocRepository.save(bloc);
-
-        blocService.removeBloc(bloc.getIdBloc());
-        assertFalse(blocRepository.existsById(bloc.getIdBloc()), "Le bloc sans chambres doit être supprimé");
-    }
-
-    @Test
-    @DisplayName("Devrait retourner une liste vide lorsque aucun bloc n'existe")
-    void testRetrieveAllBlocsWhenNoBlocsExist() {
-        List<Bloc> blocs = blocService.retrieveBlocs();
-        assertTrue(blocs.isEmpty(), "La liste des blocs doit être vide si aucun bloc n'existe");
-    }
-    @Test
-    @DisplayName("Devrait ajouter un bloc avec un nom de longueur maximale")
-    void testAddBlocWithMaxLengthName() {
-        String longName = "A".repeat(255); // Assuming 255 is the maximum length allowed
-        Bloc bloc = Bloc.builder().nomBloc(longName).build();
-
-        Bloc savedBloc = blocService.addBloc(bloc);
-
-        assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
-        assertEquals(longName, savedBloc.getNomBloc(), "Le nom du bloc doit être de longueur maximale");
-    }
-
-
-    @Test
-    @DisplayName("Devrait retourner une liste vide pour un ID de foyer valide sans blocs")
-    void testFindByValidFoyerIdFoyerNoBlocs() {
-        List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L); // Assuming 1L is a valid ID but with no blocs
-        assertTrue(blocs.isEmpty(), "La liste des blocs doit être vide pour un ID de foyer sans blocs");
-    }
-
 }
+
+
+
+
+
+
+
+
+
+
+

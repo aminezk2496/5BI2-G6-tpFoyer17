@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.esprit.tpfoyer17.entities.Bloc;
+import tn.esprit.tpfoyer17.entities.BlocNotFoundException;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.services.interfaces.IBlocService;
 
@@ -54,4 +55,13 @@ public class BlocService implements IBlocService {
     public Bloc findByChambresIdChambre(Long idChambre) {
         return blocRepository.findByChambresIdChambre(idChambre);
     }
+
+    @Override
+    public Bloc findBlocById(long id) {
+        return blocRepository.findById(id)
+                .orElseThrow(() -> new BlocNotFoundException("Bloc not found with id: " + id));
+    }
+
+
+
 }
