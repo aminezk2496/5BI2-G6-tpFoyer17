@@ -245,7 +245,7 @@ class BlocServiceTest {
         Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
         assertEquals(10L, updatedBloc.getCapaciteBloc(), "The bloc's capacity should be updated to 10");
     }
-    
+
 
 
     @Test
