@@ -33,9 +33,11 @@ public class BlocService implements IBlocService {
 
     @Override
     public Bloc addBloc(Bloc bloc) {
+        if (bloc.getNomBloc() == null) {
+            throw new IllegalArgumentException("Bloc name cannot be null");
+        }
         return blocRepository.save(bloc);
     }
-
     @Override
     public Bloc retrieveBloc(long idBloc) {
         return blocRepository.findById(idBloc).orElse(null);
