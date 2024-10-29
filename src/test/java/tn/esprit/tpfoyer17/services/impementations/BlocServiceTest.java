@@ -195,6 +195,57 @@ class BlocServiceTest {
         Bloc deletedBloc = blocService.retrieveBloc(bloc.getIdBloc());
         assertNull(deletedBloc, "Bloc should not be found after deletion");
     }
+    @Test
+    @DisplayName("Should throw exception when updating a bloc with null ID")
+    void testUpdateBlocWithNullId() {
+        Bloc bloc = Bloc.builder().idBloc(null).nomBloc("BlocSansId").build();
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc not found with id: null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should handle adding multiple blocs")
+    void testAddMultipleBlocs() {
+        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
+
+        blocService.addBloc(bloc1);
+        blocService.addBloc(bloc2);
+
+        assertEquals(2, blocRepository.findAll().size(), "There should be 2 blocs in the repository");
+    }
+
+    @Test
+    @DisplayName("Should retrieve all blocs")
+    void testRetrieveAllBlocs() {
+        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
+
+        blocRepository.save(bloc1);
+        blocRepository.save(bloc2);
+
+        List<Bloc> blocs = blocService.retrieveBlocs();
+
+        assertEquals(2, blocs.size(), "Should retrieve two blocs");
+    }
+
+    @Test
+    @DisplayName("Should update the capacity of a bloc")
+    void testUpdateBlocCapacity() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocTest").capaciteBloc(5L).build();
+        bloc = blocRepository.save(bloc);
+
+        bloc.setCapaciteBloc(10L);
+        blocService.updateBloc(bloc);
+
+        Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
+        assertEquals(10L, updatedBloc.getCapaciteBloc(), "The bloc's capacity should be updated to 10");
+    }
+
 }
 
 

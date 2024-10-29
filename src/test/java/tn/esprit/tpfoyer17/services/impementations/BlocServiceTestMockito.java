@@ -237,5 +237,52 @@ class BlocServiceTestMockito {
         assertEquals("Bloc1", foundBloc.getNomBloc());
         verify(blocRepository, times(1)).findById(1L);
     }
+
+    @Test
+    @DisplayName("Should throw exception when trying to update a null bloc")
+    void testUpdateNullBloc() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.updateBloc(null);
+        });
+
+        assertEquals("Bloc cannot be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when adding a bloc with a negative capacity")
+    void testAddBlocWithNegativeCapacity() {
+        Bloc bloc = Bloc.builder().nomBloc("InvalidBloc").capaciteBloc(-10L).build();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc);
+        });
+
+        assertEquals("Bloc capacity cannot be negative", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should return bloc when found by ID")
+    void testFindBlocById() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+
+        Bloc foundBloc = blocService.findBlocById(1L);
+
+        assertNotNull(foundBloc);
+        assertEquals("Bloc1", foundBloc.getNomBloc());
+        verify(blocRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Should return empty list when no blocs exist")
+    void testRetrieveNoBlocs() {
+        when(blocRepository.findAll()).thenReturn(List.of());
+
+        List<Bloc> blocs = blocService.retrieveBlocs();
+
+        assertTrue(blocs.isEmpty(), "List of blocs should be empty");
+        verify(blocRepository, times(1)).findAll();
+    }
 }
+
 
