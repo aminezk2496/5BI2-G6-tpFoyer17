@@ -100,4 +100,48 @@ class BlocServiceTest {
 
         assertEquals("Bloc not found with id: 999", exception.getMessage());
     }
+    @Test
+    @DisplayName("Devrait lever une exception pour un bloc non trouvé lors de la mise à jour")
+    void testUpdateNonExistentBloc() {
+        Bloc bloc = Bloc.builder().idBloc(999L).nomBloc("NomInconnu").build();
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc not found with id: 999", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Devrait lever une exception lors de la suppression d'un bloc inexistant")
+    void testDeleteNonExistentBloc() {
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.removeBloc(999L);
+        });
+
+        assertEquals("Bloc not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Devrait lever une exception lors de la recherche d'un bloc par ID invalide")
+    void testFindBlocByIdThrowsExceptionForInvalidId() {
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.findBlocById(-1L);
+        });
+
+        assertEquals("Bloc not found with id: -1", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Devrait lever une exception lors de l'ajout d'un bloc sans nom")
+    void testAddBlocWithoutName() {
+        Bloc bloc = Bloc.builder().build(); // No name
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc);
+        });
+
+        assertEquals("Bloc name cannot be null", exception.getMessage());
+    }
 }
+

@@ -125,4 +125,56 @@ class BlocServiceTestMockito {
         assertEquals("BlocWithChambre", foundBloc.getNomBloc());
         verify(blocRepository, times(1)).findByChambresIdChambre(1L);
     }
+    @Test
+    @DisplayName("Should throw exception when updating non-existent bloc")
+    void testUpdateNonExistentBloc() {
+        Bloc bloc = Bloc.builder().idBloc(999L).nomBloc("NomInconnu").build();
+        when(blocRepository.save(any(Bloc.class))).thenThrow(new RuntimeException("Bloc not found"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when deleting non-existent bloc")
+    void testDeleteNonExistentBloc() {
+        long blocId = 999L;
+        doThrow(new RuntimeException("Bloc not found")).when(blocRepository).deleteById(blocId);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.removeBloc(blocId);
+        });
+
+        assertEquals("Bloc not found", exception.getMessage());
+        verify(blocRepository, times(1)).deleteById(blocId);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when retrieving bloc by invalid ID")
+    void testFindBlocByInvalidId() {
+        when(blocRepository.findById(-1L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.findBlocById(-1L);
+        });
+
+        assertEquals("Bloc not found with id: -1", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when adding a bloc without a name")
+    void testAddBlocWithoutName() {
+        Bloc bloc = Bloc.builder().build(); // No name
+
+        when(blocRepository.save(any(Bloc.class))).thenThrow(new IllegalArgumentException("Bloc name cannot be null"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc);
+        });
+
+        assertEquals("Bloc name cannot be null", exception.getMessage());
+    }
 }
