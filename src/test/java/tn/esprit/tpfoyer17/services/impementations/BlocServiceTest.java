@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)  // Ajout de cette ligne
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BlocServiceTest {
 
     @Autowired
@@ -50,5 +50,75 @@ class BlocServiceTest {
         assertTrue(blocRepository.existsById(savedBloc.getIdBloc()), "Le bloc sauvegardé doit exister dans le dépôt");
     }
 
-    // Tests supplémentaires pour les autres méthodes
+    @Test
+    @DisplayName("Devrait mettre à jour un bloc existant")
+    void testUpdateBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("AncienNom").build();
+        Bloc savedBloc = blocRepository.save(bloc);
+        savedBloc.setNomBloc("NouveauNom");
+
+        Bloc updatedBloc = blocService.updateBloc(savedBloc);
+
+        assertNotNull(updatedBloc, "Le bloc mis à jour ne doit pas être nul");
+        assertEquals("NouveauNom", updatedBloc.getNomBloc(), "Le nom du bloc doit être mis à jour à 'NouveauNom'");
+    }
+
+    @Test
+    @DisplayName("Devrait récupérer un bloc par ID")
+    void testRetrieveBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc savedBloc = blocRepository.save(bloc);
+
+        Bloc retrievedBloc = blocService.retrieveBloc(savedBloc.getIdBloc());
+
+        assertNotNull(retrievedBloc, "Le bloc récupéré ne doit pas être nul");
+        assertEquals("Bloc1", retrievedBloc.getNomBloc(), "Le nom du bloc récupéré doit être 'Bloc1'");
+    }
+
+    @Test
+    @DisplayName("Devrait renvoyer null pour un ID de bloc inexistant")
+    void testRetrieveNonExistentBloc() {
+        Bloc bloc = blocService.retrieveBloc(999L);
+        assertNull(bloc, "Le bloc récupéré doit être nul pour un ID inexistant");
+    }
+
+    @Test
+    @DisplayName("Devrait supprimer un bloc")
+    void testDeleteBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocÀSupprimer").build();
+        Bloc savedBloc = blocRepository.save(bloc);
+
+        blocService.removeBloc(savedBloc.getIdBloc());
+
+        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()), "Le bloc supprimé ne doit pas exister dans le dépôt");
+    }
+
+    @Test
+    @DisplayName("Devrait renvoyer une liste vide pour un ID de foyer inexistant")
+    void testFindByFoyerIdFoyer() {
+        List<Bloc> blocs = blocService.findByFoyerIdFoyer(999L);
+        assertTrue(blocs.isEmpty(), "La liste des blocs doit être vide pour un ID de foyer inexistant");
+    }
+
+    @Test
+    @DisplayName("Devrait trouver un bloc par l'ID d'une chambre")
+    void testFindByChambresIdChambre() {
+        // Créer un bloc avec une chambre (Assurez-vous que la relation est correctement configurée dans l'entité)
+        Bloc bloc = Bloc.builder().nomBloc("BlocAvecChambre").build();
+        Bloc savedBloc = blocRepository.save(bloc);
+
+        Bloc foundBloc = blocService.findByChambresIdChambre(savedBloc.getIdBloc()); // Remplacez par l'ID de la chambre
+        assertNotNull(foundBloc, "Le bloc trouvé ne doit pas être nul");
+        assertEquals("BlocAvecChambre", foundBloc.getNomBloc(), "Le nom du bloc doit être 'BlocAvecChambre'");
+    }
+
+    @Test
+    @DisplayName("Devrait lever une exception pour un bloc non trouvé par ID")
+    void testFindBlocByIdThrowsExceptionForNonExistentBloc() {
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.findBlocById(999L);
+        });
+
+        assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
+    }
 }
