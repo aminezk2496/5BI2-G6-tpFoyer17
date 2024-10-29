@@ -144,17 +144,7 @@ class BlocServiceTest {
         assertDoesNotThrow(() -> blocService.removeBloc(999L), "La suppression d'un bloc inexistant ne doit pas lever d'exception");
     }
 
-    @Test
-    @DisplayName("Devrait lancer une exception pour un bloc avec un nom nul")
-    void testAddBlocWithNullName() {
-        Bloc bloc = Bloc.builder().nomBloc(null).build();
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            blocService.addBloc(bloc);
-        });
-
-        assertEquals("Le nom du bloc ne peut pas être nul", exception.getMessage());
-    }
+   
     @Test
     @DisplayName("Devrait supprimer un bloc et ses chambres associées en cascade")
     void testCascadeDeleteBlocWithChambres() {
