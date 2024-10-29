@@ -59,7 +59,7 @@ class BlocServiceTestMockito {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("UpdatedBloc").build();
         when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
 
-        Bloc updatedBloc = blocService.updateBloc(1L, bloc);
+        Bloc updatedBloc = blocService.updateBloc(bloc);
 
         assertNotNull(updatedBloc);
         assertEquals("UpdatedBloc", updatedBloc.getNomBloc());
@@ -157,7 +157,7 @@ class BlocServiceTestMockito {
         when(blocRepository.findById(999L)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            blocService.updateBloc(1L, bloc);
+            blocService.updateBloc(bloc);
         });
 
         assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
@@ -208,7 +208,7 @@ class BlocServiceTestMockito {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("SameName").build();
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
 
-        Bloc result = blocService.updateBloc(1L, bloc);
+        Bloc result = blocService.updateBloc(bloc);
         assertEquals("SameName", result.getNomBloc());
         verify(blocRepository, times(1)).save(bloc);
     }
@@ -247,7 +247,7 @@ class BlocServiceTestMockito {
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
         when(blocRepository.save(bloc)).thenThrow(new RuntimeException("Save failed"));
 
-        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(1L, bloc));
+        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(bloc));
         assertEquals("Save failed", exception.getMessage());
         verify(blocRepository, times(1)).save(bloc);
     }

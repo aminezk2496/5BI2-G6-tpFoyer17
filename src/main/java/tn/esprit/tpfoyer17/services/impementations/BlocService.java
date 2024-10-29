@@ -1,3 +1,4 @@
+
 package tn.esprit.tpfoyer17.services.impementations;
 
 import lombok.AccessLevel;
@@ -10,7 +11,6 @@ import tn.esprit.tpfoyer17.repositories.BlocRepository;
 import tn.esprit.tpfoyer17.services.interfaces.IBlocService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -25,26 +25,12 @@ public class BlocService implements IBlocService {
     }
 
     @Override
-    public Bloc updateBloc(Long id, Bloc bloc) {
-        if (bloc.getNomBloc() == null) {
-            throw new IllegalArgumentException("Bloc name cannot be null");
-        }
-
-        Bloc existingBloc = blocRepository.findById(id)
-                .orElseThrow(() -> new BlocNotFoundException("Bloc not found with id: " + id));
-
-        // Update fields
-        existingBloc.setNomBloc(bloc.getNomBloc());
-        existingBloc.setCapaciteBloc(bloc.getCapaciteBloc());
-
-        return blocRepository.save(existingBloc);
+    public Bloc updateBloc(Bloc bloc) {
+        return blocRepository.save(bloc);
     }
 
     @Override
     public Bloc addBloc(Bloc bloc) {
-        if (bloc.getNomBloc() == null) {
-            throw new IllegalArgumentException("Bloc name cannot be null");
-        }
         return blocRepository.save(bloc);
     }
 
@@ -55,10 +41,8 @@ public class BlocService implements IBlocService {
 
     @Override
     public void removeBloc(long idBloc) {
-        Bloc bloc = blocRepository.findById(idBloc)
-                .orElseThrow(() -> new BlocNotFoundException("Bloc not found"));
-        bloc.getChambres().clear();  // Clear chambres to avoid foreign key constraint issues
-        blocRepository.delete(bloc);
+        blocRepository.deleteById(idBloc);
+
     }
 
     @Override
@@ -70,10 +54,4 @@ public class BlocService implements IBlocService {
     public Bloc findByChambresIdChambre(Long idChambre) {
         return blocRepository.findByChambresIdChambre(idChambre);
     }
-
-    public Bloc findBlocById(long id) {
-        return blocRepository.findById(id)
-                .orElseThrow(() -> new BlocNotFoundException("Bloc not found with id: " + id));
-    }
 }
-

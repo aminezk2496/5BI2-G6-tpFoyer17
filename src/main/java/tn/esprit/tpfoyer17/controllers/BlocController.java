@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.services.interfaces.IBlocService;
@@ -49,13 +48,10 @@ public class BlocController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Bloc> updateBloc(@PathVariable Long id, @RequestBody Bloc bloc) {
-        Bloc updatedBloc = blocService.updateBloc(id, bloc);
-        return ResponseEntity.ok(updatedBloc);
+    @PutMapping("/updateBloc")
+    public Bloc updateBloc(@RequestBody Bloc bloc) {
+        return blocService.updateBloc(bloc);
     }
-
-
 
 
     @DeleteMapping("/removeBloc/{idBloc}")

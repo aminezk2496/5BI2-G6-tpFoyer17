@@ -1,3 +1,4 @@
+
 package tn.esprit.tpfoyer17.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,11 +31,13 @@ public class Chambre implements Serializable {
     @Enumerated(EnumType.STRING)
     TypeChambre typeChambre;
 
+    @ToString.Exclude
     @ManyToOne
     @JsonIgnore
-    Bloc bloc;  // Each Chambre is associated with one Bloc
+    Bloc bloc;
 
-    @OneToMany(mappedBy = "chambre", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @OneToMany
     @JsonIgnore
-    Set<Reservation> reservations = new HashSet<>(); // Each Chambre can have multiple Reservations
+    Set<Reservation> reservations ;
 }

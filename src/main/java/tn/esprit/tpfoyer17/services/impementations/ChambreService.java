@@ -1,3 +1,4 @@
+
 package tn.esprit.tpfoyer17.services.impementations;
 
 import lombok.AccessLevel;
@@ -53,14 +54,14 @@ public class ChambreService implements IChambreService {
 
     @Override
     public Bloc affecterChambresABloc(List<Long> numChambre, long idBloc) {
-       Bloc bloc = blocRepository.findById(idBloc).orElse(null);
-       //List<Chambre> chambreList = (List<Chambre>) chambreRepository.findAllById(numChambre);
-       List<Chambre> chambreList =  chambreRepository.findByNumeroChambreIn(numChambre);
+        Bloc bloc = blocRepository.findById(idBloc).orElse(null);
+        //List<Chambre> chambreList = (List<Chambre>) chambreRepository.findAllById(numChambre);
+        List<Chambre> chambreList =  chambreRepository.findByNumeroChambreIn(numChambre);
 
-       for(Chambre chambre: chambreList) {
-           chambre.setBloc(bloc);
-           chambreRepository.save(chambre);
-       }
+        for(Chambre chambre: chambreList) {
+            chambre.setBloc(bloc);
+            chambreRepository.save(chambre);
+        }
         return bloc;
     }
 

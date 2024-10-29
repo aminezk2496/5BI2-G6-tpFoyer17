@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,6 +29,15 @@ public class Bloc implements Serializable {
 
     long capaciteBloc;
 
-    @OneToMany(mappedBy = "bloc", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Chambre> chambres = new HashSet<>(); // Each Bloc can have multiple Chambres
+    @ToString.Exclude
+    @ManyToOne
+    @JsonIgnore
+    Foyer foyer;
+
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "bloc")
+    Set<Chambre> chambres;
+
+
 }

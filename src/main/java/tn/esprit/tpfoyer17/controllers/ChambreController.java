@@ -63,9 +63,9 @@ public class ChambreController {
     public List<Chambre> getChambresParBlocEtTypeJPQL(@PathVariable("idBloc") long idBloc, @PathVariable("typeC") TypeChambre typeC) {
         return chambreService.getChambresParBlocEtTypeJPQL(idBloc, typeC);
     }
-@GetMapping("/getChambresNonReserveParNomUniversiteEtTypeChambre/{nomUniversite}/{type}")
+    @GetMapping("/getChambresNonReserveParNomUniversiteEtTypeChambre/{nomUniversite}/{type}")
     public List<Chambre> getChambresNonReserveParNomUniversiteEtTypeChambre(@PathVariable("nomUniversite") String nomUniversite,
-                                                                         @PathVariable("type") TypeChambre type) {
+                                                                            @PathVariable("type") TypeChambre type) {
         return chambreService.getChambresNonReserveParNomUniversiteEtTypeChambre(nomUniversite, type);
     }
 
