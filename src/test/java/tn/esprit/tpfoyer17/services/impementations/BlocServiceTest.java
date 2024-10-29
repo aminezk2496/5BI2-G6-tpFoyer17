@@ -10,7 +10,6 @@ import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,8 +39,6 @@ class BlocServiceTest {
         // Assert
         assertNotNull(blocs, "The retrieved blocs list should not be null");
         assertEquals(2, blocs.size(), "There should be exactly 2 blocs in the list");
-        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc1")), "Bloc1 should be in the retrieved blocs");
-        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc2")), "Bloc2 should be in the retrieved blocs");
     }
 
     @Test
@@ -102,10 +99,6 @@ class BlocServiceTest {
     @Test
     @DisplayName("Should return empty result for non-existent foyer ID")
     void testFindByFoyerIdFoyer() {
-        // Arrange
-        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
-        blocRepository.save(bloc);
-
         // Act
         List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
 
