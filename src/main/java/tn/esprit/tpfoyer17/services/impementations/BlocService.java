@@ -18,6 +18,10 @@ import java.util.List;
 public class BlocService implements IBlocService {
     BlocRepository blocRepository;
 
+    public BlocService() {
+
+    }
+
     @Override
     public List<Bloc> retrieveBlocs() {
         return (List<Bloc>) blocRepository.findAll();
