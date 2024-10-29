@@ -1,6 +1,5 @@
 package tn.esprit.tpfoyer17.services.impementations;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,64 +21,68 @@ class BlocServiceTest {
     @Autowired
     private BlocRepository blocRepository;
 
-    @BeforeEach
-    void setUp() {
-        blocRepository.deleteAll();  // Ensures a clean state before each test
-    }
-
     @Test
-    void testRetrieveBlocs_emptyList() {
+    void testRetrieveBlocs() {
+        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
+        blocRepository.save(bloc1);
+        blocRepository.save(bloc2);
+
         List<Bloc> blocs = blocService.retrieveBlocs();
-        assertTrue(blocs.isEmpty(), "Blocs list should be empty initially");
+
+        assertNotNull(blocs, "The retrieved blocs list should not be null");
+        assertEquals(2, blocs.size(), "There should be exactly 2 blocs in the list");
+        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc1")), "Bloc1 should be in the retrieved blocs");
+        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc2")), "Bloc2 should be in the retrieved blocs");
     }
 
     @Test
     void testAddBloc() {
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
+
         Bloc savedBloc = blocService.addBloc(bloc);
 
         assertNotNull(savedBloc, "Saved bloc should not be null");
         assertEquals("BlocTest", savedBloc.getNomBloc(), "Bloc name should be 'BlocTest'");
-
-        // Cleanup
-        blocService.removeBloc(savedBloc.getIdBloc());
+        assertTrue(blocRepository.existsById(savedBloc.getIdBloc()), "Saved bloc should exist in the repository");
     }
 
     @Test
     void testUpdateBloc() {
         Bloc bloc = Bloc.builder().nomBloc("OldName").build();
-        Bloc savedBloc = blocService.addBloc(bloc);
+        Bloc savedBloc = blocRepository.save(bloc);
         savedBloc.setNomBloc("NewName");
 
         Bloc updatedBloc = blocService.updateBloc(savedBloc);
 
         assertNotNull(updatedBloc, "Updated bloc should not be null");
         assertEquals("NewName", updatedBloc.getNomBloc(), "Bloc name should be updated to 'NewName'");
-
-        // Cleanup
-        blocService.removeBloc(updatedBloc.getIdBloc());
     }
 
     @Test
     void testRetrieveNonExistentBloc() {
         Bloc bloc = blocService.retrieveBloc(999L);
+
         assertNull(bloc, "Retrieved bloc should be null for non-existent ID");
     }
 
     @Test
     void testDeleteBloc() {
         Bloc blocToDelete = Bloc.builder().nomBloc("BlocToDelete").build();
-        Bloc savedBloc = blocService.addBloc(blocToDelete);
+        Bloc savedBloc = blocRepository.save(blocToDelete);
 
         blocService.removeBloc(savedBloc.getIdBloc());
 
-        // Verify deletion
-        assertNull(blocService.retrieveBloc(savedBloc.getIdBloc()), "Bloc should be removed successfully");
+        assertFalse(blocRepository.existsById(savedBloc.getIdBloc()), "Deleted bloc should not exist in the repository");
     }
 
     @Test
-    void testFindByFoyerIdFoyer_noBlocs() {
+    void testFindByFoyerIdFoyer() {
+        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
+        blocRepository.save(bloc);
+
         List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
+
         assertTrue(blocs.isEmpty(), "The result should be empty for a non-existent foyer ID");
     }
 }
