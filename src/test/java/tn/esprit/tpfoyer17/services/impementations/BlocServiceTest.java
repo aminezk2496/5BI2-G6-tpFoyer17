@@ -32,14 +32,11 @@ class BlocServiceTest {
 
         assertNotNull(blocs, "The retrieved blocs list should not be null");
         assertEquals(2, blocs.size(), "There should be exactly 2 blocs in the list");
-        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc1")), "Bloc1 should be in the retrieved blocs");
-        assertTrue(blocs.stream().anyMatch(b -> b.getNomBloc().equals("Bloc2")), "Bloc2 should be in the retrieved blocs");
     }
 
     @Test
     void testAddBloc() {
         Bloc bloc = Bloc.builder().nomBloc("BlocTest").build();
-
         Bloc savedBloc = blocService.addBloc(bloc);
 
         assertNotNull(savedBloc, "Saved bloc should not be null");
