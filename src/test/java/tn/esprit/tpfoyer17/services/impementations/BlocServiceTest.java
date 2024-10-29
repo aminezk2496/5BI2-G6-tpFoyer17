@@ -143,5 +143,41 @@ class BlocServiceTest {
 
         assertEquals("Bloc name cannot be null", exception.getMessage());
     }
+    @Test
+    @DisplayName("Should return an empty list when no blocs exist")
+    void testRetrieveBlocsWhenNoBlocsExist() {
+        List<Bloc> blocs = blocService.retrieveBlocs();
+        assertNotNull(blocs, "The list of blocs should not be null");
+        assertTrue(blocs.isEmpty(), "The list of blocs should be empty");
+    }
+    @Test
+    @DisplayName("Should add a bloc successfully")
+    void testAddValidBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("ValidBloc").build();
+        blocService.addBloc(bloc); // Ensure it does not throw any exceptions
+        assertTrue(blocRepository.existsById(bloc.getIdBloc()), "The bloc should exist in the repository after saving");
+    }
+    @Test
+    @DisplayName("Should update an existing bloc")
+    void testUpdateExistingBloc() {
+        Bloc bloc = Bloc.builder().nomBloc("OldName").build();
+        bloc = blocRepository.save(bloc); // Save to get an ID
+        bloc.setNomBloc("UpdatedName");
+
+        Bloc updatedBloc = blocService.updateBloc(bloc);
+        assertEquals("UpdatedName", updatedBloc.getNomBloc(), "The bloc name should be updated");
+    }
+    @Test
+    @DisplayName("Should retrieve a bloc by its ID")
+    void testRetrieveBlocById() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocToRetrieve").build();
+        bloc = blocRepository.save(bloc); // Save to get an ID
+
+        Bloc retrievedBloc = blocService.retrieveBloc(bloc.getIdBloc());
+        assertNotNull(retrievedBloc, "The retrieved bloc should not be null");
+        assertEquals("BlocToRetrieve", retrievedBloc.getNomBloc(), "The bloc name should match the expected name");
+    }
+
+
 }
 

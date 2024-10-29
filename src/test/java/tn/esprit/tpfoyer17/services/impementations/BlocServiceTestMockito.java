@@ -177,4 +177,41 @@ class BlocServiceTestMockito {
 
         assertEquals("Bloc name cannot be null", exception.getMessage());
     }
+    @Test
+    @DisplayName("Should retrieve all blocs using mock")
+    void testRetrieveAllBlocsWithMock() {
+        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
+        when(blocRepository.findAll()).thenReturn(Arrays.asList(bloc1, bloc2));
+
+        List<Bloc> blocs = blocService.retrieveBlocs();
+
+        assertNotNull(blocs);
+        assertEquals(2, blocs.size());
+        verify(blocRepository, times(1)).findAll();
+    }
+    @Test
+    @DisplayName("Should find blocs by foyer ID")
+    void testFindByFoyerIdFoyerWithMock() {
+        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
+        when(blocRepository.findByFoyerIdFoyer(1L)).thenReturn(Arrays.asList(bloc1, bloc2));
+
+        List<Bloc> blocs = blocService.findByFoyerIdFoyer(1L);
+        assertNotNull(blocs);
+        assertEquals(2, blocs.size());
+        verify(blocRepository, times(1)).findByFoyerIdFoyer(1L);
+    }
+    @Test
+    @DisplayName("Should find a bloc by chambre ID")
+    void testFindByChambresIdChambreWithMock() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("BlocWithChambre").build();
+        when(blocRepository.findByChambresIdChambre(1L)).thenReturn(bloc);
+
+        Bloc foundBloc = blocService.findByChambresIdChambre(1L);
+        assertNotNull(foundBloc);
+        assertEquals("BlocWithChambre", foundBloc.getNomBloc());
+        verify(blocRepository, times(1)).findByChambresIdChambre(1L);
+    }
+
 }
