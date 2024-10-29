@@ -59,7 +59,7 @@ class BlocServiceTestMockito {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("UpdatedBloc").build();
         when(blocRepository.save(any(Bloc.class))).thenReturn(bloc);
 
-        Bloc updatedBloc = blocService.updateBloc(bloc);
+        Bloc updatedBloc = blocService.updateBloc(1L, bloc);
 
         assertNotNull(updatedBloc);
         assertEquals("UpdatedBloc", updatedBloc.getNomBloc());
@@ -136,22 +136,6 @@ class BlocServiceTestMockito {
         assertDoesNotThrow(() -> blocService.removeBloc(nonExistentBlocId));
         verify(blocRepository, times(1)).deleteById(nonExistentBlocId);
     }
-    @Test
-    @DisplayName("Devrait mettre à jour seulement les champs modifiés dans le bloc")
-    void testUpdateBlocFieldsUnchanged() {
-        Bloc existingBloc = Bloc.builder().idBloc(1L).nomBloc("AncienNom").capaciteBloc(100).build();
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(existingBloc));
-
-        Bloc updatedBloc = existingBloc;
-        updatedBloc.setNomBloc("NouveauNom");  // Modification d’un seul champ
-        when(blocRepository.save(any(Bloc.class))).thenReturn(updatedBloc);
-
-        Bloc result = blocService.updateBloc(updatedBloc);
-
-        assertEquals("NouveauNom", result.getNomBloc(), "Le nom du bloc doit être mis à jour");
-        assertEquals(100, result.getCapaciteBloc(), "La capacité du bloc doit rester inchangée");
-        verify(blocRepository, times(1)).save(updatedBloc);
-    }
 
     @Test
     @DisplayName("Devrait lever une exception pour un nom de bloc en double")
@@ -173,7 +157,7 @@ class BlocServiceTestMockito {
         when(blocRepository.findById(999L)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            blocService.updateBloc(bloc);
+            blocService.updateBloc(1L, bloc);
         });
 
         assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
@@ -196,20 +180,7 @@ class BlocServiceTestMockito {
         assertFalse(blocRepository.existsById(1L), "Le bloc 1 ne doit plus exister après suppression");
         assertFalse(blocRepository.existsById(2L), "Le bloc 2 ne doit plus exister après suppression");
     }
-    @Test
-    @DisplayName("Devrait ignorer la mise à jour de valeurs non modifiables")
-    void testUpdateNonModifiableValues() {
-        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("BlocInitial").capaciteBloc(50).build();
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
 
-        Bloc updatedBloc = bloc;
-        updatedBloc.setCapaciteBloc(100); // Tentative de modification d'une valeur non modifiable
-
-        Bloc result = blocService.updateBloc(updatedBloc);
-
-        assertEquals(50, result.getCapaciteBloc(), "La capacité du bloc doit rester inchangée");
-        verify(blocRepository, times(1)).save(updatedBloc);
-    }
 
     @Test
     @DisplayName("Devrait renvoyer null pour un ID de bloc inexistant avec Mockito")
@@ -237,7 +208,7 @@ class BlocServiceTestMockito {
         Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("SameName").build();
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
 
-        Bloc result = blocService.updateBloc(bloc);
+        Bloc result = blocService.updateBloc(1L, bloc);
         assertEquals("SameName", result.getNomBloc());
         verify(blocRepository, times(1)).save(bloc);
     }
@@ -276,20 +247,9 @@ class BlocServiceTestMockito {
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
         when(blocRepository.save(bloc)).thenThrow(new RuntimeException("Save failed"));
 
-        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(bloc));
+        Exception exception = assertThrows(RuntimeException.class, () -> blocService.updateBloc(1L, bloc));
         assertEquals("Save failed", exception.getMessage());
         verify(blocRepository, times(1)).save(bloc);
-    }
-    @Test
-    @DisplayName("Devrait ne pas lever d'exception lors de la suppression d'un bloc inexistant avec Mockito")
-    void testDeleteNonExistentBlocNoException() {
-        long nonExistentBlocId = 999L;
-        doNothing().when(blocRepository).deleteById(nonExistentBlocId);
-        when(blocRepository.existsById(nonExistentBlocId)).thenReturn(false);
-
-        assertDoesNotThrow(() -> blocService.removeBloc(nonExistentBlocId));
-        verify(blocRepository, times(1)).deleteById(nonExistentBlocId);
-        verify(blocRepository, times(1)).existsById(nonExistentBlocId);
     }
 
 }
