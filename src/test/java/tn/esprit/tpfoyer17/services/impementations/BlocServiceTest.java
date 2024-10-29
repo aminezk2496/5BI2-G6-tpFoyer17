@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.tpfoyer17.entities.Bloc;
+import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
+import tn.esprit.tpfoyer17.repositories.ChambreRepository;
 
 import java.util.List;
 
@@ -20,6 +22,9 @@ class BlocServiceTest {
 
     @Autowired
     private BlocService blocService;
+
+    @Autowired
+    private ChambreRepository chambreRepository; 
 
     @Autowired
     private BlocRepository blocRepository;
@@ -103,14 +108,24 @@ class BlocServiceTest {
     @Test
     @DisplayName("Devrait trouver un bloc par l'ID d'une chambre")
     void testFindByChambresIdChambre() {
-        // Créer un bloc avec une chambre (Assurez-vous que la relation est correctement configurée dans l'entité)
+        // Créez et associez une chambre au bloc
         Bloc bloc = Bloc.builder().nomBloc("BlocAvecChambre").build();
-        Bloc savedBloc = blocRepository.save(bloc);
+        bloc = blocRepository.save(bloc);
 
-        Bloc foundBloc = blocService.findByChambresIdChambre(savedBloc.getIdBloc()); // Remplacez par l'ID de la chambre
+        // Associez la chambre au bloc (en supposant que Chambre est correctement configurée pour la relation)
+        Chambre chambre = new Chambre();
+        chambre.setNumeroChambre(101);
+        chambre.setBloc(bloc); // Associe la chambre au bloc
+        chambre = chambreRepository.save(chambre); // Sauvegarde de la chambre pour qu'elle ait un ID
+
+        // Act : Cherche le bloc en utilisant l'ID de la chambre
+        Bloc foundBloc = blocService.findByChambresIdChambre(chambre.getIdChambre());
+
+        // Assert
         assertNotNull(foundBloc, "Le bloc trouvé ne doit pas être nul");
         assertEquals("BlocAvecChambre", foundBloc.getNomBloc(), "Le nom du bloc doit être 'BlocAvecChambre'");
     }
+
 
     @Test
     @DisplayName("Devrait lever une exception pour un bloc non trouvé par ID")
