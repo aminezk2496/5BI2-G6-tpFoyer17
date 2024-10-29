@@ -2,19 +2,29 @@ package tn.esprit.tpfoyer17.services.impementations;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import tn.esprit.tpfoyer17.entities.Bloc;
+import tn.esprit.tpfoyer17.repositories.BlocRepository;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class BlocServiceTest {
 
+    @Autowired
     private BlocService blocService;
+
+    @Autowired
+    private BlocRepository blocRepository;
 
     @BeforeEach
     void setUp() {
-        blocService = new BlocService();  // Direct instantiation for unit testing
+        blocRepository.deleteAll();  // Ensures a clean state before each test
     }
 
     @Test
