@@ -23,7 +23,7 @@ public class Bloc implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    long idBloc;
+    Long idBloc;
 
     String nomBloc;
 

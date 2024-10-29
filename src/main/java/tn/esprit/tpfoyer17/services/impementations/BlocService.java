@@ -27,11 +27,18 @@ public class BlocService implements IBlocService {
 
     @Override
     public Bloc updateBloc(Bloc bloc) {
+        if (bloc.getIdBloc() == null || !blocRepository.existsById(bloc.getIdBloc())) {
+            throw new RuntimeException("Bloc not found with id: " + bloc.getIdBloc());
+        }
         return blocRepository.save(bloc);
     }
 
+
     @Override
     public Bloc addBloc(Bloc bloc) {
+        if (bloc.getNomBloc() == null) {
+            throw new IllegalArgumentException("Bloc name cannot be null");
+        }
         return blocRepository.save(bloc);
     }
 
@@ -42,8 +49,10 @@ public class BlocService implements IBlocService {
 
     @Override
     public void removeBloc(long idBloc) {
+        if (!blocRepository.existsById(idBloc)) {
+            throw new RuntimeException("Bloc not found");
+        }
         blocRepository.deleteById(idBloc);
-
     }
 
     @Override
