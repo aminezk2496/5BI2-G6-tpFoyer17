@@ -26,8 +26,12 @@ public class BlocService implements IBlocService {
 
     @Override
     public Bloc updateBloc(Long id, Bloc bloc) {
+        if (bloc.getNomBloc() == null) {
+            throw new IllegalArgumentException("Bloc name cannot be null");
+        }
+
         Bloc existingBloc = blocRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bloc not found with id: " + id));
+                .orElseThrow(() -> new BlocNotFoundException("Bloc not found with id: " + id));
 
         // Update fields
         existingBloc.setNomBloc(bloc.getNomBloc());
@@ -52,7 +56,7 @@ public class BlocService implements IBlocService {
     @Override
     public void removeBloc(long idBloc) {
         Bloc bloc = blocRepository.findById(idBloc)
-                .orElseThrow(() -> new RuntimeException("Bloc not found"));
+                .orElseThrow(() -> new BlocNotFoundException("Bloc not found"));
         bloc.getChambres().clear();  // Clear chambres to avoid foreign key constraint issues
         blocRepository.delete(bloc);
     }
@@ -68,7 +72,8 @@ public class BlocService implements IBlocService {
     }
 
     public Bloc findBlocById(long id) {
-        Optional<Bloc> blocOptional = blocRepository.findById(id);
-        return blocOptional.orElseThrow(() -> new RuntimeException("Bloc not found with id: " + id));
+        return blocRepository.findById(id)
+                .orElseThrow(() -> new BlocNotFoundException("Bloc not found with id: " + id));
     }
 }
+
