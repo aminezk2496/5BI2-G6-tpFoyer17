@@ -27,9 +27,22 @@ public class BlocService implements IBlocService {
     }
 
     @Override
-    public Bloc updateBloc(Bloc bloc) {
-        return blocRepository.save(bloc);
+    public void updateBloc(Long id, Bloc newBloc) {
+        if (id == null || !blocRepository.existsById(id)) {
+            throw new RuntimeException("Invalid ID");
+        }
+
+        Bloc existingBloc = blocRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bloc not found"));
+
+        existingBloc.setNomBloc(newBloc.getNomBloc());
+        existingBloc.setCapaciteBloc(newBloc.getCapaciteBloc());
+        // Save the updated Bloc back to the repository
+        blocRepository.save(existingBloc);
     }
+
+
+
 
     @Override
     public Bloc addBloc(Bloc bloc) {

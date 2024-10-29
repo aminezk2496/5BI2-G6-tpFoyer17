@@ -36,13 +36,19 @@ public class Chambre implements Serializable {
     Bloc bloc;
 
     @ToString.Exclude
-    @OneToMany
+    @OneToMany(mappedBy = "chambre")  // Ensure there's a field in Reservation that points to Chambre
     @JsonIgnore
-    Set<Reservation> reservations ;
+    Set<Reservation> reservations;
 
-    public Chambre(int i, int ordinal) {
+    // If you want to maintain a set of chambres, which is unusual here:
+    @OneToMany(mappedBy = "bloc")  // Change this mapping if needed
+            Set<Chambre> chambres = new HashSet<>();
+
+    public Set<Chambre> getChambres() {
+        if (this.chambres == null) {
+            this.chambres = new HashSet<>();
+        }
+        return this.chambres;
     }
 
-    public void setFoyer(Foyer foyer) {
-    }
 }
