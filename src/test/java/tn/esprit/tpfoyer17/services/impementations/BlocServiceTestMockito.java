@@ -283,6 +283,61 @@ class BlocServiceTestMockito {
         assertTrue(blocs.isEmpty(), "List of blocs should be empty");
         verify(blocRepository, times(1)).findAll();
     }
+    @Test
+    @DisplayName("Should throw exception when updating bloc with empty name")
+    void testUpdateBlocWithEmptyName() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("").build();
+        when(blocRepository.existsById(1L)).thenReturn(true);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc name cannot be empty", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when adding duplicate bloc name")
+    void testAddDuplicateBlocName() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocDuplicate").build();
+        when(blocRepository.save(bloc)).thenThrow(new IllegalArgumentException("Bloc name must be unique"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.addBloc(bloc);
+        });
+
+        assertEquals("Bloc name must be unique", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should update an existing bloc with new capacity")
+    void testUpdateBlocCapacity() {
+        Bloc existingBloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").capaciteBloc(5L).build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(existingBloc));
+        when(blocRepository.save(existingBloc)).thenReturn(existingBloc);
+
+        existingBloc.setCapaciteBloc(10L);
+        Bloc updatedBloc = blocService.updateBloc(existingBloc);
+
+        assertNotNull(updatedBloc);
+        assertEquals(10L, updatedBloc.getCapaciteBloc());
+        verify(blocRepository, times(1)).save(existingBloc);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when removing bloc with non-existent ID")
+    void testRemoveBlocWithNonExistentId() {
+        long blocId = 999L;
+        doThrow(new RuntimeException("Bloc not found")).when(blocRepository).deleteById(blocId);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.removeBloc(blocId);
+        });
+
+        assertEquals("Bloc not found", exception.getMessage());
+        verify(blocRepository, times(1)).deleteById(blocId);
+    }
+
 }
 
 

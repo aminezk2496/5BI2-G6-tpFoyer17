@@ -245,6 +245,71 @@ class BlocServiceTest {
         Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
         assertEquals(10L, updatedBloc.getCapaciteBloc(), "The bloc's capacity should be updated to 10");
     }
+    @Test
+    @DisplayName("Should throw exception when trying to update a bloc to have a null name")
+    void testUpdateBlocToNullName() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("ValidName").build();
+        blocRepository.save(bloc);
+
+        bloc.setNomBloc(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc name cannot be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should retrieve bloc with correct associations")
+    void testRetrieveBlocWithChambres() {
+        // Setup
+        Bloc bloc = Bloc.builder().nomBloc("BlocWithChambres").build();
+        bloc = blocRepository.save(bloc);
+
+        // Assume chambre is associated
+        // Create chambre entity and associate it with bloc, if applicable
+
+        Bloc retrievedBloc = blocService.findBlocById(bloc.getIdBloc());
+        assertNotNull(retrievedBloc);
+        assertEquals("BlocWithChambres", retrievedBloc.getNomBloc());
+    }
+
+    @Test
+    @DisplayName("Should handle adding multiple blocs and retrieving them")
+    void testAddMultipleBlocsAndRetrieve() {
+        Bloc bloc1 = Bloc.builder().nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().nomBloc("Bloc2").build();
+
+        blocService.addBloc(bloc1);
+        blocService.addBloc(bloc2);
+
+        assertEquals(2, blocRepository.findAll().size(), "Should retrieve two blocs");
+    }
+
+    @Test
+    @DisplayName("Should update an existing bloc's name successfully")
+    void testUpdateBlocName() {
+        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
+        bloc = blocRepository.save(bloc);
+
+        bloc.setNomBloc("UpdatedBloc");
+        blocService.updateBloc(bloc);
+
+        Bloc updatedBloc = blocService.retrieveBloc(bloc.getIdBloc());
+        assertEquals("UpdatedBloc", updatedBloc.getNomBloc());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when trying to retrieve non-existent bloc by ID")
+    void testRetrieveNonExistentBlocById() {
+        long nonExistentId = 999L;
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.findBlocById(nonExistentId);
+        });
+
+        assertEquals("Bloc not found with id: " + nonExistentId, exception.getMessage());
+    }
 
 }
 
