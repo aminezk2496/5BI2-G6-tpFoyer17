@@ -45,9 +45,11 @@ public class BlocService implements IBlocService {
 
     @Override
     public void removeBloc(long idBloc) {
-        blocRepository.deleteById(idBloc);
-
+        Bloc bloc = blocRepository.findById(idBloc).orElseThrow(() -> new RuntimeException("Bloc not found"));
+        bloc.getChambres().clear();  // Clear chambres to avoid foreign key constraint issues
+        blocRepository.delete(bloc);
     }
+
 
     @Override
     public List<Bloc> findByFoyerIdFoyer(long idFoyer) {

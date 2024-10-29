@@ -13,6 +13,7 @@ import tn.esprit.tpfoyer17.repositories.ChambreRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -144,7 +145,7 @@ class BlocServiceTest {
         assertDoesNotThrow(() -> blocService.removeBloc(999L), "La suppression d'un bloc inexistant ne doit pas lever d'exception");
     }
 
-   
+
     @Test
     @DisplayName("Devrait supprimer un bloc et ses chambres associées en cascade")
     void testCascadeDeleteBlocWithChambres() {
@@ -161,5 +162,45 @@ class BlocServiceTest {
         assertFalse(chambreRepository.existsById(chambre1.getIdChambre()), "La chambre 101 doit être supprimée en cascade");
         assertFalse(chambreRepository.existsById(chambre2.getIdChambre()), "La chambre 102 doit être supprimée en cascade");
     }
+    @Test
+    @DisplayName("Devrait retourner une valeur par défaut pour un bloc inexistant")
+    void testRetrieveNonExistentBlocWithDefault() {
+        Bloc defaultBloc = Bloc.builder().nomBloc("DefaultBloc").build();
+        Bloc retrievedBloc = Optional.ofNullable(blocService.retrieveBloc(999L)).orElse(defaultBloc);
+
+        assertNotNull(retrievedBloc, "Le bloc retourné ne doit pas être nul");
+        assertEquals("DefaultBloc", retrievedBloc.getNomBloc(), "Le bloc par défaut doit avoir le nom 'DefaultBloc'");
+    }
+    @Test
+    @DisplayName("Devrait retourner une liste vide pour un bloc sans chambre")
+    void testRetrieveChambresFromBlocWithoutChambres() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocSansChambre").build();
+        bloc = blocRepository.save(bloc);
+
+        List<Chambre> chambres = chambreRepository.findByBlocIdBloc(bloc.getIdBloc());
+
+        assertTrue(chambres.isEmpty(), "La liste des chambres doit être vide pour un bloc sans chambre");
+    }
+    @Test
+    @DisplayName("Devrait ajouter un bloc avec la capacité minimale de 0")
+    void testAddBlocWithMinCapacity() {
+        Bloc bloc = Bloc.builder().nomBloc("BlocMinCapacity").capaciteBloc(0).build();
+        Bloc savedBloc = blocService.addBloc(bloc);
+
+        assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
+        assertEquals(0, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être 0");
+    }
+
+    @Test
+    @DisplayName("Devrait ajouter un bloc avec une capacité élevée")
+    void testAddBlocWithHighCapacity() {
+        int highCapacity = 1000000;
+        Bloc bloc = Bloc.builder().nomBloc("BlocHighCapacity").capaciteBloc(highCapacity).build();
+        Bloc savedBloc = blocService.addBloc(bloc);
+
+        assertNotNull(savedBloc, "Le bloc sauvegardé ne doit pas être nul");
+        assertEquals(highCapacity, savedBloc.getCapaciteBloc(), "La capacité du bloc doit être la valeur élevée");
+    }
+
 
 }

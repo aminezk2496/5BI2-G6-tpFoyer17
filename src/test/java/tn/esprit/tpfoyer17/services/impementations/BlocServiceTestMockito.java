@@ -179,6 +179,37 @@ class BlocServiceTestMockito {
         assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
         verify(blocRepository, never()).save(bloc);
     }
+    @Test
+    @DisplayName("Devrait supprimer plusieurs blocs et vérifier la cohérence")
+    void testMultipleBlocDeletions() {
+        Bloc bloc1 = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
+        Bloc bloc2 = Bloc.builder().idBloc(2L).nomBloc("Bloc2").build();
+
+        when(blocRepository.existsById(1L)).thenReturn(true).thenReturn(false);
+        when(blocRepository.existsById(2L)).thenReturn(true).thenReturn(false);
+
+        blocService.removeBloc(1L);
+        blocService.removeBloc(2L);
+
+        verify(blocRepository, times(1)).deleteById(1L);
+        verify(blocRepository, times(1)).deleteById(2L);
+        assertFalse(blocRepository.existsById(1L), "Le bloc 1 ne doit plus exister après suppression");
+        assertFalse(blocRepository.existsById(2L), "Le bloc 2 ne doit plus exister après suppression");
+    }
+    @Test
+    @DisplayName("Devrait ignorer la mise à jour de valeurs non modifiables")
+    void testUpdateNonModifiableValues() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("BlocInitial").capaciteBloc(50).build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+
+        Bloc updatedBloc = bloc;
+        updatedBloc.setCapaciteBloc(100); // Tentative de modification d'une valeur non modifiable
+
+        Bloc result = blocService.updateBloc(updatedBloc);
+
+        assertEquals(50, result.getCapaciteBloc(), "La capacité du bloc doit rester inchangée");
+        verify(blocRepository, times(1)).save(updatedBloc);
+    }
 
 
 }
