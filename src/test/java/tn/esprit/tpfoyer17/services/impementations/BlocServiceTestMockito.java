@@ -337,6 +337,54 @@ class BlocServiceTestMockito {
         assertEquals("Bloc not found", exception.getMessage());
         verify(blocRepository, times(1)).deleteById(blocId);
     }
+    @Test
+    @DisplayName("Should throw exception when removing bloc with null ID")
+    void testRemoveBlocWithNullId() {
+        long blocId = 0L; // ID should be a valid ID
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.removeBloc(blocId);
+        });
+
+        assertEquals("Bloc not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should return a bloc with a valid ID")
+    void testFindBlocByIdReturnsBloc() {
+        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
+
+        Bloc foundBloc = blocService.findBlocById(1L);
+
+        assertNotNull(foundBloc);
+        assertEquals("Bloc1", foundBloc.getNomBloc());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when updating an existing bloc's capacity")
+    void testUpdateExistingBlocCapacity() {
+        Bloc existingBloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").capaciteBloc(5L).build();
+        when(blocRepository.findById(1L)).thenReturn(Optional.of(existingBloc));
+
+        existingBloc.setCapaciteBloc(10L);
+        when(blocRepository.save(existingBloc)).thenReturn(existingBloc);
+
+        Bloc updatedBloc = blocService.updateBloc(existingBloc);
+
+        assertEquals(10L, updatedBloc.getCapaciteBloc());
+        verify(blocRepository, times(1)).save(existingBloc);
+    }
+    @Test
+    @DisplayName("Should throw exception when updating bloc with null ID")
+    void testUpdateBlocWithNullId() {
+        Bloc bloc = Bloc.builder().idBloc(null).nomBloc("ValidName").build();
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            blocService.updateBloc(bloc);
+        });
+
+        assertEquals("Bloc not found with id: null", exception.getMessage());
+    }
 
 }
 

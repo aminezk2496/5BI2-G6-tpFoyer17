@@ -30,8 +30,12 @@ public class BlocService implements IBlocService {
         if (bloc.getIdBloc() == null || !blocRepository.existsById(bloc.getIdBloc())) {
             throw new RuntimeException("Bloc not found with id: " + bloc.getIdBloc());
         }
+        if (bloc.getNomBloc() == null || bloc.getNomBloc().isEmpty()) {
+            throw new IllegalArgumentException("Bloc name cannot be null or empty");
+        }
         return blocRepository.save(bloc);
     }
+
 
 
     @Override
