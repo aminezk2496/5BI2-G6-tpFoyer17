@@ -125,4 +125,16 @@ class BlocServiceTestMockito {
         assertEquals("BlocWithChambre", foundBloc.getNomBloc());
         verify(blocRepository, times(1)).findByChambresIdChambre(1L);
     }
+    @Test
+    @DisplayName("Should not throw exception when deleting non-existent bloc using mock")
+    void testDeleteNonExistentBlocWithMock() {
+        // Arrange
+        long nonExistentBlocId = 999L;
+        doNothing().when(blocRepository).deleteById(nonExistentBlocId);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> blocService.removeBloc(nonExistentBlocId));
+        verify(blocRepository, times(1)).deleteById(nonExistentBlocId);
+    }
+
 }

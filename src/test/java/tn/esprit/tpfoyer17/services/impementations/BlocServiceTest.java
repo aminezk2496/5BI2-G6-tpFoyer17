@@ -24,7 +24,7 @@ class BlocServiceTest {
     private BlocService blocService;
 
     @Autowired
-    private ChambreRepository chambreRepository; 
+    private ChambreRepository chambreRepository;
 
     @Autowired
     private BlocRepository blocRepository;
@@ -136,4 +136,11 @@ class BlocServiceTest {
 
         assertEquals("Bloc not found with id: 999", exception.getMessage(), "Le message d'exception doit correspondre");
     }
+    @Test
+    @DisplayName("Devrait ne pas générer d'erreur lors de la suppression d'un bloc inexistant")
+    void testDeleteNonExistentBloc() {
+        // Act & Assert
+        assertDoesNotThrow(() -> blocService.removeBloc(999L), "La suppression d'un bloc inexistant ne doit pas lever d'exception");
+    }
+
 }
