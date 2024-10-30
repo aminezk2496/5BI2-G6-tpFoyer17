@@ -1,0 +1,9 @@
+# Ignorer le fichier fonts.dtd
+usr/share/xml/fontconfig/fonts.dtd
+
+# Ignorer les fichiers temporaires
+temp/
+*.log
+
+# Ignorer les fichiers de configuration locaux
+config.local.json
