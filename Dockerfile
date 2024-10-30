@@ -1,5 +1,8 @@
 FROM openjdk:17
 
+# Installer curl
+RUN apt-get update && apt-get install -y curl
+
 EXPOSE 8287
 
 # Télécharger le JAR depuis le dépôt distant
@@ -7,5 +10,3 @@ RUN curl -o tpFoyer-17.jar -L "http://192.168.33.10:8081/repository/maven-releas
 
 # Définir le point d'entrée pour exécuter l'application
 ENTRYPOINT ["java", "-jar", "tpFoyer-17.jar"]
-
-
