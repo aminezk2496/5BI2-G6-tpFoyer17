@@ -14,7 +14,7 @@ services:
       - db:/var/lib/mysql
 
   spring-app:
-    image: '192.168.33.10:8085/docker-hosted/aminezarrouk/tpfoyer17:${BUILD_NUMBER}'
+    image: '192.168.33.10:8085/repository/docker-hosted/aminezarrouk/tpfoyer17:retry-51'
     restart: on-failure
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/tpFoyer17devops
