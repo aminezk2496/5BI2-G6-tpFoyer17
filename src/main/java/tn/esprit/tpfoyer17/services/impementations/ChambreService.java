@@ -6,13 +6,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import tn.esprit.tpfoyer17.Dao.ChambreDao; // Import de ChambreDao
 import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.entities.Chambre;
-import tn.esprit.tpfoyer17.entities.Universite;
 import tn.esprit.tpfoyer17.entities.enumerations.TypeChambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
-import tn.esprit.tpfoyer17.repositories.ChambreRepository;
-import tn.esprit.tpfoyer17.repositories.UniversiteRepository;
 import tn.esprit.tpfoyer17.services.interfaces.IChambreService;
 
 import java.util.List;
@@ -22,75 +20,72 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChambreService implements IChambreService {
-    ChambreRepository chambreRepository;
+    ChambreDao chambreDao; // Injection de ChambreDao
     BlocRepository blocRepository;
-    UniversiteRepository universiteRepository;
 
     @Override
     public List<Chambre> retrieveAllChambres() {
-        return (List<Chambre>) chambreRepository.findAll();
+        return chambreDao.findAll(); // Utilisation du DAO
     }
 
     @Override
     public Chambre addChambre(Chambre c) {
-        return chambreRepository.save(c);
+        chambreDao.save(c); // Utilisation du DAO
+        return c; // Retourner l'objet après l'avoir sauvegardé
     }
 
     @Override
     public Chambre updateChambre(Chambre c) {
-        return chambreRepository.save(c);
+        chambreDao.save(c); // Utilisation du DAO
+        return c; // Retourner l'objet après la mise à jour
     }
 
     @Override
     public Chambre retrieveChambre(long idChambre) {
-        return chambreRepository.findById(idChambre).orElse(null);
+        return chambreDao.findById(idChambre); // Utilisation du DAO
     }
 
     @Override
     public List<Chambre> findByTypeChambre() {
-        return chambreRepository.findByTypeChambreAndReservationsEstValide(TypeChambre.DOUBLE, true);
+        return chambreDao.findByTypeChambreAndReservationsEstValide(TypeChambre.DOUBLE, true); // Utilisation du DAO
     }
 
     @Override
     public Bloc affecterChambresABloc(List<Long> numChambre, long idBloc) {
-       Bloc bloc = blocRepository.findById(idBloc).orElse(null);
-       //List<Chambre> chambreList = (List<Chambre>) chambreRepository.findAllById(numChambre);
-       List<Chambre> chambreList =  chambreRepository.findByNumeroChambreIn(numChambre);
+        Bloc bloc = blocRepository.findById(idBloc).orElse(null);
+        List<Chambre> chambreList = chambreDao.findByNumeroChambreIn(numChambre); // Utilisation du DAO
 
-       for(Chambre chambre: chambreList) {
-           chambre.setBloc(bloc);
-           chambreRepository.save(chambre);
-       }
+        for(Chambre chambre: chambreList) {
+            chambre.setBloc(bloc);
+            chambreDao.save(chambre); // Utilisation du DAO
+        }
         return bloc;
     }
 
     @Override
     public List<Chambre> getChambresParNomUniversite(String nomUniversite) {
-        return chambreRepository.findByBlocFoyerUniversiteNomUniversiteLike(nomUniversite);
+        return chambreDao.findByBlocFoyerUniversiteNomUniversiteLike(nomUniversite); // Utilisation du DAO
     }
 
     @Override
     public List<Chambre> getChambresParBlocEtType(long idBloc, TypeChambre typeC) {
-        return chambreRepository.findByBlocIdBlocAndTypeChambre(idBloc,typeC);
+        return chambreDao.findByBlocIdBlocAndTypeChambre(idBloc, typeC); // Utilisation du DAO
     }
 
     @Override
     public List<Chambre> getChambresParBlocEtTypeJPQL(long idBloc, TypeChambre typeC) {
-        return chambreRepository.recupererParBlocEtTypeChambre(idBloc, typeC);
+        return chambreDao.recupererParBlocEtTypeChambre(idBloc, typeC); // Utilisation du DAO
     }
 
     @Override
     public List<Chambre> getChambresNonReserveParNomUniversiteEtTypeChambre(String nomUniversite, TypeChambre type) {
-        return chambreRepository.getChambresNonReserveParNomUniversiteEtTypeChambre(nomUniversite,type);
+        return chambreDao.getChambresNonReserveParNomUniversiteEtTypeChambre(nomUniversite, type); // Utilisation du DAO
     }
 
-    @Scheduled(cron = "*/10 * * * * *" )
-
+    @Scheduled(cron = "*/10 * * * * *")
     @Override
     public void getChambresNonReserve() {
-
-        for (Chambre chambre : chambreRepository.getChambresNonReserve())
-        {
+        for (Chambre chambre : chambreDao.getChambresNonReserve()) { // Utilisation du DAO
             log.info(chambre.toString());
         }
     }
