@@ -14,7 +14,7 @@ services:
       - db:/var/lib/mysql
 
   spring-app:
-    image: 'http://192.168.33.10:8081/repository/docker/aminezarrouk/tpfoyer17:${BUILD_NUMBER}'  # Mise à jour de l'image pour utiliser Nexus
+    image: '192.168.33.10:8081/repository/docker/aminezarrouk/tpfoyer17:${BUILD_NUMBER}'  # Mise à jour de l'image pour utiliser Nexus
     restart: on-failure
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/tpFoyer17devops
