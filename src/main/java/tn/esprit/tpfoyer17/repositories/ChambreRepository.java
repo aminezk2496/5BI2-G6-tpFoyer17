@@ -1,3 +1,4 @@
+
 package tn.esprit.tpfoyer17.repositories;
 
 import org.springframework.data.jpa.repository.Query;
@@ -28,7 +29,6 @@ public interface ChambreRepository extends CrudRepository<Chambre, Long> {
 
 
 
-    List<Chambre> findByIdIn(List<Long> ids);
 
 
     List<Chambre> findByNumeroChambreIn(List<Long> numeroChambreList);
@@ -58,7 +58,7 @@ public interface ChambreRepository extends CrudRepository<Chambre, Long> {
     List<Chambre> getChambresNonReserveParNomUniversiteEtTypeChambre(@Param("nomUniversite") String nomUniversite , @Param("typechambre") TypeChambre typechambre );
 
     @Query("SELECT chambre FROM Chambre chambre " +
-        //    "INNER JOIN chambre.bloc.foyer.universite universite " +
+            //    "INNER JOIN chambre.bloc.foyer.universite universite " +
             " WHERE (SELECT COUNT(r) FROM chambre.reservations r) = 0"
     )
     List<Chambre> getChambresNonReserve();

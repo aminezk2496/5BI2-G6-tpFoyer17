@@ -84,7 +84,7 @@ class ChambreServiceTest {
         assertEquals("Bloc1", affectedBloc.getNomBloc());
 
         // Vérifie que les chambres sont affectées au bloc
-        List<Chambre> chambresAffectees = chambreRepository.findByBlocIdBloc(bloc.getIdBloc());
+        List<Chambre> chambresAffectees = chambreRepository.findByBlocIdBlocAndTypeChambre(bloc.getIdBloc());
         assertEquals(2, chambresAffectees.size());
     }
 
