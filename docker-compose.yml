@@ -4,7 +4,7 @@ services:
     image: 'mysql:8.0'
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: kaddem
+      MYSQL_DATABASE: tpFoyer17
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3306:3306"
