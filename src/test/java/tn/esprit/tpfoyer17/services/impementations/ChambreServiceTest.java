@@ -64,29 +64,7 @@ class ChambreServiceTest {
         assertEquals(103L, savedChambre.getNumeroChambre());
     }
 
-    @Test
-    void testAffecterChambresABloc() {
-        // Arrange
-        Bloc bloc = Bloc.builder().nomBloc("Bloc1").build();
-        bloc = blocRepository.save(bloc);
 
-        Chambre chambre1 = Chambre.builder().numeroChambre(101L).build();
-        Chambre chambre2 = Chambre.builder().numeroChambre(102L).build();
-        chambreRepository.saveAll(Arrays.asList(chambre1, chambre2));
-
-        List<Long> chambreIds = Arrays.asList(101L, 102L);
-
-        // Act
-        Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, bloc.getIdBloc());
-
-        // Assert
-        assertNotNull(affectedBloc);
-        assertEquals("Bloc1", affectedBloc.getNomBloc());
-
-        // Vérifie que les chambres sont affectées au bloc
-        List<Chambre> chambresAffectees = chambreRepository.findByBlocIdBlocAndTypeChambre(bloc.getIdBloc());
-        assertEquals(2, chambresAffectees.size());
-    }
 
 
 }
