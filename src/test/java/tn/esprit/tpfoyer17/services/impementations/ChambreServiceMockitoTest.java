@@ -10,8 +10,7 @@ import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.entities.Chambre;
 import tn.esprit.tpfoyer17.entities.enumerations.TypeChambre;
 import tn.esprit.tpfoyer17.repositories.BlocRepository;
-import tn.esprit.tpfoyer17.repositories.ChambreRepository;
-import tn.esprit.tpfoyer17.repositories.UniversiteRepository;
+import tn.esprit.tpfoyer17.Dao.ChambreDao;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,13 +26,10 @@ class ChambreServiceMockitoTest {
     private ChambreService chambreService;
 
     @Mock
-    private ChambreRepository chambreRepository;
+    private ChambreDao chambreDao;
 
     @Mock
     private BlocRepository blocRepository;
-
-    @Mock
-    private UniversiteRepository universiteRepository;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +41,7 @@ class ChambreServiceMockitoTest {
         // Arrange
         Chambre chambre1 = Chambre.builder().numeroChambre(101L).typeChambre(TypeChambre.SIMPLE).build();
         Chambre chambre2 = Chambre.builder().numeroChambre(102L).typeChambre(TypeChambre.DOUBLE).build();
-        when(chambreRepository.findAll()).thenReturn(Arrays.asList(chambre1, chambre2));
+        when(chambreDao.findAll()).thenReturn(Arrays.asList(chambre1, chambre2));
 
         // Act
         List<Chambre> chambres = chambreService.retrieveAllChambres();
@@ -55,25 +51,20 @@ class ChambreServiceMockitoTest {
         assertEquals(2, chambres.size());
         assertEquals(101L, chambres.get(0).getNumeroChambre());
         assertEquals(102L, chambres.get(1).getNumeroChambre());
-        verify(chambreRepository, times(1)).findAll();
+        verify(chambreDao, times(1)).findAll();
     }
 
     @Test
     void testAddChambre() {
         // Arrange
         Chambre chambre = Chambre.builder().numeroChambre(103L).typeChambre(TypeChambre.SIMPLE).build();
-        when(chambreRepository.save(any(Chambre.class))).thenReturn(chambre);
 
         // Act
-        Chambre savedChambre = chambreService.addChambre(chambre);
+        chambreService.addChambre(chambre);
 
         // Assert
-        assertNotNull(savedChambre);
-        assertEquals(103L, savedChambre.getNumeroChambre());
-        verify(chambreRepository, times(1)).save(chambre);
+        verify(chambreDao, times(1)).save(chambre);  // Check if save was called once with the chambre object
     }
-
-
 
     @Test
     void testAffecterChambresABloc() {
@@ -84,7 +75,7 @@ class ChambreServiceMockitoTest {
         List<Long> chambreIds = Arrays.asList(101L, 102L);
 
         when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
-        when(chambreRepository.findByNumeroChambreIn(chambreIds)).thenReturn(Arrays.asList(chambre1, chambre2));
+        when(chambreDao.findByNumeroChambreIn(chambreIds)).thenReturn(Arrays.asList(chambre1, chambre2));
 
         // Act
         Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, 1L);
@@ -92,8 +83,6 @@ class ChambreServiceMockitoTest {
         // Assert
         assertNotNull(affectedBloc);
         assertEquals("Bloc1", affectedBloc.getNomBloc());
-        verify(chambreRepository, times(2)).save(any(Chambre.class));
+        verify(chambreDao, times(2)).save(any(Chambre.class));
     }
-
-
 }
