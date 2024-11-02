@@ -76,10 +76,6 @@
             <version>2.2.220</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
 
         <!-- Lombok -->
         <dependency>
@@ -100,6 +96,19 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.1.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
 
             <!-- JaCoCo for Code Coverage -->
             <plugin>
@@ -165,28 +174,6 @@
         </repository>
     </repositories>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
-            </properties>
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <spring.profiles.active>test</spring.profiles.active>
-                <spring.datasource.url>jdbc:h2:mem:testdb</spring.datasource.url>
-                <spring.datasource.driver-class-name>org.h2.Driver</spring.datasource.driver-class-name>
-                <spring.datasource.username>sa</spring.datasource.username>
-                <spring.datasource.password></spring.datasource.password>
-                <spring.jpa.hibernate.ddl-auto>create-drop</spring.jpa.hibernate.ddl-auto>
-                <spring.h2.console.enabled>true</spring.h2.console.enabled>
-                <spring.jpa.show-sql>true</spring.jpa.show-sql>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-    </profiles>
+
+
 </project>

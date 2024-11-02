@@ -1,13 +1,14 @@
 package tn.esprit.tpfoyer17.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ import java.util.Set;
 public class Reservation implements Serializable {
 
     @Id
-   // @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    // @GeneratedValue(strategy = GenerationType.SEQUENCE)
     String idReservation;
 
     LocalDate anneeUniversitaire;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -23,7 +22,7 @@ public class Bloc implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    long idBloc;
+    Long idBloc;
 
     String nomBloc;
 
@@ -40,7 +39,4 @@ public class Bloc implements Serializable {
     Set<Chambre> chambres;
 
 
-    public void setIdBloc(long idBloc) {
-        this.idBloc = idBloc;
-    }
 }
