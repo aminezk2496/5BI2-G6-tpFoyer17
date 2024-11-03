@@ -105,7 +105,7 @@
             </plugin>
 
             <!-- Spring Boot Maven Plugin -->
-           
+
 
             <!-- JaCoCo for Code Coverage -->
             <plugin>
