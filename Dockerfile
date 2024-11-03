@@ -1,4 +1,4 @@
-FROM openjdk:17-slim
+FROM openjdk:11
 
 EXPOSE 8287
 
@@ -10,3 +10,6 @@ RUN curl -o tpFoyer-17.jar -L "http://192.168.33.10:8081/repository/maven-releas
 
 # Définir le point d'entrée pour exécuter l'application
 ENTRYPOINT ["java", "-jar", "tpFoyer-17.jar"]
+
+
+
