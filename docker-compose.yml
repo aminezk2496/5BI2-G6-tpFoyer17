@@ -1,25 +1,23 @@
-version: '3'
+version: "3"
+
 services:
   mysqldb:
-    image: 'mysql:8.0'
+    container_name: mysqldb
+    image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: mysqldb
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3306:3306"
     networks:
       - mynetwork
     volumes:
-      - db:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
 
   spring-app:
-    image: '192.168.33.10:8085/repository/docker-hosted/aminezarrouk/tpfoyer17:retry-51'
+    container_name: spring-app
+    image: aminezarrouk/tpfoyer17:${BUILD_NUMBER}
     restart: on-failure
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/tpFoyer17devops
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD:
     ports:
       - "8287:8287"
     depends_on:
@@ -32,5 +30,4 @@ networks:
     driver: bridge
 
 volumes:
-  db:
-    driver: local
+  mysql-data:
