@@ -50,11 +50,7 @@
             <version>2.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>tn.esprit</groupId>
-            <artifactId>tpFoyer-17</artifactId>
-            <version>0.0.1</version>
-        </dependency>
+
 
         <!-- Spring Boot Starter Test (JUnit 5) -->
         <dependency>
