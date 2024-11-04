@@ -8,7 +8,9 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - mynetwork
+      mynetwork:
+        aliases:
+          - mysqldb
     volumes:
       - db:/var/lib/mysql
 
