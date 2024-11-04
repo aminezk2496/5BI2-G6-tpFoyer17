@@ -128,6 +128,10 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            <output>${project.build.directory}/jacoco.exec</output>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -145,6 +149,7 @@
                 </executions>
             </plugin>
 
+
             <!-- Surefire Plugin for running tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -158,11 +163,7 @@
             </plugin>
 
             <!-- SonarQube Plugin -->
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.9.1.2184</version>
-            </plugin>
+
         </plugins>
     </build>
 
