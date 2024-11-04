@@ -18,7 +18,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpfoyer?createDatabaseIfNotExist=true&useUnicode=true"
       SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: null,
+      SPRING_DATASOURCE_PASSWORD: null
       spring.jpa.hibernate.ddl-auto: "update"
       spring.jpa.properties.hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
     ports:
