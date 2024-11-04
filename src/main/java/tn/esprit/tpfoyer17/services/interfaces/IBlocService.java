@@ -16,4 +16,8 @@ public interface IBlocService {
     Bloc findByChambresIdChambre(Long idChambre);
 
 
+    Bloc findBlocById(long id);
 }
+
+
+
