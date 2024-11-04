@@ -130,7 +130,6 @@
                         </goals>
                         <configuration>
                             <destFile>${project.build.directory}/jacoco.exec</destFile>
-                            <output>${project.build.directory}/jacoco.exec</output>
                         </configuration>
                     </execution>
                     <execution>
@@ -148,6 +147,7 @@
                     </execution>
                 </executions>
             </plugin>
+
 
 
             <!-- Surefire Plugin for running tests -->
