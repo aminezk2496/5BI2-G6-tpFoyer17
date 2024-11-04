@@ -16,9 +16,11 @@ services:
     image: syrineazzouz/tpfoyer17:${BUILD_NUMBER} # Utiliser le tag d'image basé sur le numéro de build
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/tpFoyer17
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: # Optionnel, laissez vide si vous utilisez MYSQL_ALLOW_EMPTY_PASSWORD
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpFoyer17"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: null,
+      spring.jpa.hibernate.ddl-auto: "update"
+      spring.jpa.properties.hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
     ports:
       - "8082:8082"
     depends_on:
