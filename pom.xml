@@ -17,7 +17,7 @@
     <description>tpFoyer-17</description>
 
     <properties>
-        <java.version>14</java.version> <!-- Passer à Java 14 -->
+        <java.version>17</java.version> <!-- Passer à Java 17 -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <junit.jupiter.version>5.9.3</junit.jupiter.version> <!-- Gardez cela si nécessaire -->
