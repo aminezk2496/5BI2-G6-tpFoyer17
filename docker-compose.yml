@@ -1,21 +1,26 @@
 services:
   mysqldb:
-    container_name: mysqldb
-    image: mysql:8.0
+    image: 'mysql:8.0'
     restart: unless-stopped
     environment:
+      MYSQL_DATABASE: tpFoyer17
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3306:3306"
     networks:
       - mynetwork
     volumes:
-      - mysql-data:/var/lib/mysql
+      - db:/var/lib/mysql
 
   spring-app:
-    container_name: spring-app
-    image: 192.168.33.10:8088/repository/docker-hosted/aminezarrouk/tpfoyer17:${BUILD_NUMBER}
+    image: "192.168.33.10:8084/repository/docker-hosted/aminezarrouk/tpfoyer17:${BUILD_NUMBER}"  # Utiliser le tag d'image basé sur le numéro de build
     restart: on-failure
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpFoyer17"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: null,
+      spring.jpa.hibernate.ddl-auto: "update"
+      spring.jpa.properties.hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
     ports:
       - "8287:8287"
     depends_on:
@@ -28,4 +33,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  db:
