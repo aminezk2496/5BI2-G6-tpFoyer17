@@ -16,7 +16,7 @@ services:
     image: "192.168.33.10:8081/repository/docker-hosted/syrineazzouz/tpfoyer17:${BUILD_NUMBER}"  # Utiliser le tag d'image basé sur le numéro de build
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpFoyer17"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/tpfoyer?createDatabaseIfNotExist=true&useUnicode=true"
       SPRING_DATASOURCE_USERNAME: "root"
       SPRING_DATASOURCE_PASSWORD: null,
       spring.jpa.hibernate.ddl-auto: "update"
