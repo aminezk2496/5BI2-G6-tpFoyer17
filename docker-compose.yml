@@ -13,7 +13,7 @@ services:
       - db:/var/lib/mysql
 
   spring-app:
-    image: syrineazzouz/tpfoyer17:${BUILD_NUMBER} # Utiliser le tag d'image basé sur le numéro de build
+    image: 192.168.33.10:8081/repository/docker-hosted/syrineazzouz/tpfoyer17:${BUILD_NUMBER} # Utiliser le tag d'image basé sur le numéro de build
     restart: on-failure
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpFoyer17"
