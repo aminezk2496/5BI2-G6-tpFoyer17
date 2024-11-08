@@ -47,7 +47,9 @@ public class EtudiantService implements IEtudiantService {
 
     @Override
     public List<Etudiant> findByReservationsAnneeUniversitaire() {
-        System.out.println((LocalDate.now()).getYear());
-        return etudiantRepository.findByReservationsAnneeUniversitaire(LocalDate.now());
+        int currentYear = LocalDate.now().getYear();
+        System.out.println("Current Academic Year: " + currentYear);
+        return etudiantRepository.findByReservationsAnneeUniversitaire(currentYear);
     }
+
 }

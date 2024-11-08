@@ -161,15 +161,16 @@ public class EtudiantServiceMock {
         etudiant2.setPrenomEtudiant("Smith");
 
         List<Etudiant> etudiants = Arrays.asList(etudiant1, etudiant2);
-
+        int currentYear = LocalDate.now().getYear();
         // Simuler le comportement de la méthode findByReservationsAnneeUniversitaire
-        when(mockRepository.findByReservationsAnneeUniversitaire(LocalDate.now())).thenReturn(etudiants);
+        when(mockRepository.findByReservationsAnneeUniversitaire(currentYear)).thenReturn(etudiants);
+
 
         // Appeler la méthode findByReservationsAnneeUniversitaire
         List<Etudiant> result = etudiantService.findByReservationsAnneeUniversitaire();
 
         // Vérifier que la méthode findByReservationsAnneeUniversitaire a bien été appelée avec la bonne année
-        verify(mockRepository, times(1)).findByReservationsAnneeUniversitaire(LocalDate.now());
+        verify(mockRepository, times(1)).findByReservationsAnneeUniversitaire(currentYear);
 
         // Vérifier que la liste des étudiants retournée n'est pas vide et contient les bons étudiants
         assertNotNull(result);
