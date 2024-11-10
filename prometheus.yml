@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'jenkins'
+    metrics_path: /prometheus
+    static_configs:
+      - targets: ['192.168.33.10:8080']  # Jenkins URL
+
+  - job_name: 'mysqldb'
+    static_configs:
+      - targets: ['mysqldb:3306']  # MySQL container
+
+  - job_name: 'spring-app'
+    static_configs:
+      - targets: ['spring-app:8287']  # Spring Boot application container
+
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9323']  # Docker daemon metrics (if enabled)
