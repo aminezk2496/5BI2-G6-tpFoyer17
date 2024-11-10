@@ -9,6 +9,7 @@ import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.services.interfaces.IBlocService;
 
 import java.util.List;
+@CrossOrigin(origins = "http://localhost:4200")
 
 @RestController
 @AllArgsConstructor
