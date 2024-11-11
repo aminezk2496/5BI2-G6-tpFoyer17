@@ -1,3 +1,5 @@
+version: "3.8"  # Définir la version de Docker Compose
+
 services:
   mysqldb:
     image: 'mysql:8.0'
@@ -13,12 +15,12 @@ services:
       - db:/var/lib/mysql
 
   spring-app:
-    image: "192.168.33.10:8081/repository/docker-hosted/syrineazzouz/tpfoyer17:${BUILD_NUMBER}"  # Utiliser le tag d'image basé sur le numéro de build
+    image: "192.168.33.10:8085/repository/docker-hosted/syrineazzouz/tpfoyer17:${BUILD_NUMBER}"  # Utiliser le tag d'image basé sur le numéro de build
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/tpfoyer?createDatabaseIfNotExist=true&useUnicode=true"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpfoyer?createDatabaseIfNotExist=true&useUnicode=true"  # Utilisez le nom du service MySQL dans l'URL
       SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: null,
+      SPRING_DATASOURCE_PASSWORD: ""  # Laissez vide ou définissez une valeur si nécessaire
       spring.jpa.hibernate.ddl-auto: "update"
       spring.jpa.properties.hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
     ports:
@@ -28,13 +30,33 @@ services:
     networks:
       - mynetwork
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - mynetwork
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    networks:
+      - mynetwork
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
 networks:
   mynetwork:
     driver: bridge
 
 volumes:
   db:
-
-
-
-
+  grafana-storage:
