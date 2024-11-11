@@ -8,10 +8,8 @@ ARG NEXUS_URL="http://192.168.1.13:8081/repository/maven-releases/"
 ARG GROUP_ID="tn/esprit"
 ARG ARTIFACT_ID="tpFoyer-17"
 
-# Install required dependencies
 RUN apt-get update && apt-get install -y curl libxml2-utils && apt-get clean
 
-# Fetch the latest version from Nexus
 RUN mkdir /app \
     && cd /app \
     && echo "Fetching latest version from Nexus..." \
