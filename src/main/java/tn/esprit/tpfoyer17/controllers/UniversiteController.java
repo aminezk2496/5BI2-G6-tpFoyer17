@@ -9,6 +9,7 @@ import tn.esprit.tpfoyer17.entities.Universite;
 import tn.esprit.tpfoyer17.services.interfaces.IUniversiteService;
 
 import java.util.List;
+@CrossOrigin(origins = "http://localhost:4200")
 
 @RestController
 @AllArgsConstructor

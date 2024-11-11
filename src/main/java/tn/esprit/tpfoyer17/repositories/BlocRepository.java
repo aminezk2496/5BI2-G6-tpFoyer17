@@ -31,6 +31,8 @@ public interface BlocRepository extends JpaRepository<Bloc,Long> {
 
 
 
+
+
     List<Bloc> findByFoyerIdFoyer(long idFoyer);
     Bloc findByChambresIdChambre(Long idChambre);
     List<Bloc> findByFoyerNomFoyerLikeAndFoyerUniversiteAdresseLike(String nomFoyer, String adresse);

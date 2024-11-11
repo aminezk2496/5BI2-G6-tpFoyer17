@@ -22,6 +22,7 @@ public interface ChambreRepository extends CrudRepository<Chambre, Long> {
 
 
 
+    List<Chambre> findByTypeChambre(TypeChambre typeChambre);
 
 
 
