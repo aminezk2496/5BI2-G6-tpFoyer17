@@ -16,7 +16,7 @@ scrape_configs:
     # Adjust the metrics_path based on whether you use the context path or not
     metrics_path: /actuator/prometheus  # No context path if removed in application.properties
     static_configs:
-      - targets: [ 'spring-app:8082' ]  # Actual IP and port for the Spring Boot container
+      - targets: [ '192.168.33.10:8082' ]  # Actual IP and port for the Spring Boot container
 
   - job_name: 'docker'
     metrics_path: /metrics
