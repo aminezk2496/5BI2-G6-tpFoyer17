@@ -13,12 +13,15 @@ scrape_configs:
       - targets: [ '192.168.33.10:9104' ]  # MySQL Exporter IP and port
 
   - job_name: 'spring-app'
-    # Adjust the metrics_path based on whether you use the context path or not
     metrics_path: /actuator/prometheus  # No context path if removed in application.properties
     static_configs:
-      - targets: [ '172.18.0.3:8287' ]  # Actual IP and port for the Spring Boot container
+      - targets: ['192.168.33.10:8287']  # Actual IP and port for the Spring Boot container
 
   - job_name: 'docker'
     metrics_path: /metrics
     static_configs:
       - targets: ['192.168.33.10:9323']  # Docker daemon metrics (if enabled)
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['192.168.33.10:9100']  # Node Exporter IP and port
