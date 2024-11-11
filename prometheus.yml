@@ -10,7 +10,7 @@ scrape_configs:
   - job_name: 'mysqldb'
     metrics_path: /metrics
     static_configs:
-      - targets: [ 'mysqldb:9104' ]  # MySQL Exporter IP and port
+      - targets: [ '192.168.33.10:9104' ]  # MySQL Exporter IP and port
 
   - job_name: 'spring-app'
     # Adjust the metrics_path based on whether you use the context path or not
