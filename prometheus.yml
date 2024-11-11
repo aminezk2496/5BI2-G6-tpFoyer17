@@ -8,12 +8,16 @@ scrape_configs:
       - targets: ['192.168.33.10:8080']  # Jenkins URL
 
   - job_name: 'mysqldb'
+    metrics_path: /metrics
     static_configs:
-      - targets: ['mysqldb:3306']  # MySQL container
+      - targets: [ '192.168.33.10:9104' ]  # Replace with your actual IP and the MySQL Exporter port
+
 
   - job_name: 'spring-app'
+    metrics_path: /tpFoyer17/actuator/prometheus  # Adjust to match your endpoint
     static_configs:
-      - targets: ['spring-app:8287']  # Spring Boot application container
+      - targets: [ '172.18.0.3:8287' ]  # Replace with the actual IP and port
+
 
   - job_name: 'docker'
     static_configs:
