@@ -37,10 +37,9 @@ services:
         - "9091:9090"
       command:
         - --config.file=/etc/prometheus/prometheus.yml
+
       volumes:
-        - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-
+         - /var/lib/jenkins/workspace/Ahmed_Bouraoui_5ERPBI2/prometheus.yml:/etc/prometheus/prometheus.yml
       depends_on:
         - backend-spring
 
