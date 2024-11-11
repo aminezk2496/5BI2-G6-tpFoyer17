@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequestMapping("api/univeristes")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UniversiteController {
     @GetMapping("/retrieveAllUniversities")
     public List<Universite> retrieveAllUniversities() {

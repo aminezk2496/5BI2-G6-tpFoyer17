@@ -16,7 +16,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequestMapping("api/blocs")
 
-
+@CrossOrigin(origins = "http://localhost:4200") // Replace with the correct Angular app URL if needed
 public class BlocController {
     @GetMapping("/findByFoyerIdFoyer/{idFoyer}")
     public List<Bloc> findByFoyerIdFoyer(@PathVariable("idFoyer") long idFoyer) {

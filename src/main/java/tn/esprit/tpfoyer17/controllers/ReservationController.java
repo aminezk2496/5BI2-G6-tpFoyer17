@@ -17,6 +17,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequestMapping("api/reservations")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ReservationController {
     @GetMapping("/retrieveAllReservation")
     public List<Reservation> retrieveAllReservation() {
