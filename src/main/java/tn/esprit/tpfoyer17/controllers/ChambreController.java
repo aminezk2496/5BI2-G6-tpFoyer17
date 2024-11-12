@@ -40,15 +40,21 @@ public class ChambreController {
     }
 
     @GetMapping("/findByTypeChambre")
-    public List<Chambre> findByTypeChambre() {
-        return chambreService.findByTypeChambre();
+    public List<Chambre> findByTypeChambre(@RequestParam TypeChambre type) {
+        return chambreService.findByTypeChambre(type);
     }
 
-    @PutMapping("/affecterChambresABloc/{idBloc}")
-    public Bloc affecterChambresABloc(@RequestBody List<Long> numChambre,
-                                      @PathVariable("idBloc") long idBloc) {
-        return chambreService.affecterChambresABloc(numChambre, idBloc);
+
+
+
+    @PutMapping("/affecterChambreABloc/{idBloc}/{idChambre}")
+    public Bloc affecterChambreABloc(@PathVariable("idChambre") Long idChambre,
+                                     @PathVariable("idBloc") long idBloc) {
+        return chambreService.affecterChambreABloc(idChambre, idBloc);
     }
+
+
+
 
     @GetMapping("/getChambresParNomUniversite/{nomUniversite}")
     public List<Chambre> getChambresParNomUniversite(@PathVariable("nomUniversite") String nomUniversite) {

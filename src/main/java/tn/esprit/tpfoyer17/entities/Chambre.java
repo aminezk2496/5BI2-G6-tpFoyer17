@@ -29,12 +29,14 @@ public class Chambre implements Serializable {
     long numeroChambre;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "type_chambre") // Ajout pour mapper correctement le nom de la colonne
     TypeChambre typeChambre;
 
-    @ToString.Exclude
-    @ManyToOne
-    @JsonIgnore
-    Bloc bloc;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bloc_id_bloc")
+    private Bloc bloc;
+
 
     @ToString.Exclude
     @OneToMany

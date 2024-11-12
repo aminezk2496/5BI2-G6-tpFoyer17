@@ -58,6 +58,25 @@ services:
     networks:
       - mynetwork
 
+  mysql-exporter:
+    image: prom/mysqld-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: "root:@tcp(mysqldb:3306)/tpFoyer17"
+    ports:
+      - "9104:9104"
+    networks:
+      - mynetwork
+    depends_on:
+      - mysqldb
+
+  docker-exporter:
+    image: prom/docker-exporter:latest
+    privileged: true
+    ports:
+      - "9323:9323"
+    networks:
+      - mynetwork
+
 networks:
   mynetwork:
     driver: bridge
@@ -65,3 +84,4 @@ networks:
 volumes:
   db:
   grafana-storage:
+docker

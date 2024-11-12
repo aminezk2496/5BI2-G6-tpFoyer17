@@ -48,22 +48,23 @@ public class ChambreService implements IChambreService {
     }
 
     @Override
-    public List<Chambre> findByTypeChambre() {
-        return chambreRepository.findByTypeChambreAndReservationsEstValide(TypeChambre.DOUBLE, true);
+    public List<Chambre> findByTypeChambre(TypeChambre type) {
+        return chambreRepository.findByTypeChambre(type);
     }
 
     @Override
-    public Bloc affecterChambresABloc(List<Long> numChambre, long idBloc) {
-        Bloc bloc = blocRepository.findById(idBloc).orElse(null);
-        //List<Chambre> chambreList = (List<Chambre>) chambreRepository.findAllById(numChambre);
-        List<Chambre> chambreList =  chambreRepository.findByNumeroChambreIn(numChambre);
+    public Bloc affecterChambreABloc(Long idChambre, long idBloc) {
+        Bloc bloc = blocRepository.findById(idBloc).orElseThrow(() -> new RuntimeException("Bloc non trouvé"));
+        Chambre chambre = chambreRepository.findById(idChambre).orElseThrow(() -> new RuntimeException("Chambre non trouvée"));
 
-        for(Chambre chambre: chambreList) {
-            chambre.setBloc(bloc);
-            chambreRepository.save(chambre);
-        }
+        chambre.setBloc(bloc);
+        chambreRepository.save(chambre); // Sauvegarde la chambre avec le nouveau bloc
+
         return bloc;
     }
+
+
+
 
     @Override
     public List<Chambre> getChambresParNomUniversite(String nomUniversite) {
