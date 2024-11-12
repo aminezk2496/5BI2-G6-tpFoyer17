@@ -30,4 +30,5 @@ public class Universite implements Serializable {
     @OneToOne
     @JsonIgnore
     Foyer foyer;
+
 }

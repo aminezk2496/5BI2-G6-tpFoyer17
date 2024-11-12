@@ -47,20 +47,31 @@ public class FoyerService implements IFoyerService {
 
     @Override
     public void removeFoyer(long idFoyer) {
-    foyerRepository.deleteById(idFoyer);
+        foyerRepository.deleteById(idFoyer);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        // Supprimer tous les foyers de la base de données
+        foyerRepository.deleteAll();
     }
 
     @Transactional
     public Foyer ajouterFoyerEtAffecterAUniversite(Foyer foyer, long idUniversite) {
         Universite universite = universiteRepository.findById(idUniversite).orElse(null);
-foyerRepository.save(foyer);
-for(Bloc bloc : foyer.getBlocs())
-{
-    bloc.setFoyer(foyer);
-    blocRepository.save(bloc);
-}
 
-        assert universite != null;
+        if (universite == null) {
+            throw new IllegalArgumentException("University with ID " + idUniversite + " does not exist");
+        }
+
+        foyerRepository.save(foyer);
+        for(Bloc bloc : foyer.getBlocs())
+        {
+            bloc.setFoyer(foyer);
+            blocRepository.save(bloc);
+        }
+
+
         universite.setFoyer(foyer);
         universiteRepository.save(universite);
 
