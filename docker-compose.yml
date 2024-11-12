@@ -22,7 +22,7 @@ services:
       spring.jpa.hibernate.ddl-auto: "update"
       spring.jpa.properties.hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
     ports:
-      - "8084:8084"
+      - "8287:8287"  # Mappe le port 8287 interne pour Spring Boot
     depends_on:
       - mysqldb
     networks:
@@ -32,7 +32,7 @@ services:
     image: "aminezarrouk/tpfoyer17angular:${BUILD_NUMBER}"
     restart: unless-stopped
     ports:
-      - "8287:80"  # Mapper le port 80 du conteneur vers le port 8287 sur l'hôte
+      - "8288:80"  # Mappe le port 80 interne de Nginx à 8288 en externe pour Angular
     networks:
       - mynetwork
     depends_on:
