@@ -1,5 +1,3 @@
-version: "3.8"  # Définir la version de Docker Compose
-
 services:
   mysqldb:
     image: 'mysql:8.0'
@@ -30,33 +28,9 @@ services:
     networks:
       - mynetwork
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - mynetwork
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    ports:
-      - "3000:3000"
-    networks:
-      - mynetwork
-    volumes:
-      - grafana-storage:/var/lib/grafana
-
 networks:
   mynetwork:
     driver: bridge
 
 volumes:
   db:
-  grafana-storage:
