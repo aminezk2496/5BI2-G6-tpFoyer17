@@ -1,33 +1,12 @@
-# Start from an OpenJDK base image
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-slim
 
-# Set environment variables for Nexus credentials and artifact details
-ARG NEXUS_USER
-ARG NEXUS_PASSWORD
-ARG NEXUS_URL="http://192.168.1.13:8081/repository/maven-releases/"
-ARG GROUP_ID="tn/esprit"
-ARG ARTIFACT_ID="tpFoyer-17"
+EXPOSE 8287
 
-RUN apt-get update && apt-get install -y curl libxml2-utils && apt-get clean
+# Install curl
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
+# Download the JAR file from the Nexus repository
+RUN curl -o tpFoyer-17-0.0.1.jar -L "http://192.168.1.13:8081/repository/maven-releases/tn/esprit/tpFoyer-17/0.0.1/tpFoyer-17-0.0.1.jar"
 
-
-
-RUN mkdir /app \
-    && cd /app \
-    && echo "Fetching latest version from Nexus..." \
-    && LATEST_VERSION=$(curl -u $NEXUS_USER:$NEXUS_PASSWORD -s "${NEXUS_URL}${GROUP_ID}/${ARTIFACT_ID}/maven-metadata.xml" | xmllint --xpath "string(//metadata/versioning/latest)" -) \
-    && echo "Latest version retrieved: $LATEST_VERSION" \
-    && JAR_FILE="${ARTIFACT_ID}-${LATEST_VERSION}.jar" \
-    && curl -u $NEXUS_USER:$NEXUS_PASSWORD -O "${NEXUS_URL}${GROUP_ID}/${ARTIFACT_ID}/${LATEST_VERSION}/${JAR_FILE}" \
-    && if [ -f "$JAR_FILE" ]; then echo "JAR file downloaded successfully"; else echo "Failed to download JAR file" && exit 1; fi \
-    && mv "$JAR_FILE" app.jar
-
-
-
-
-# Expose the application port
-EXPOSE 8082
-
-# Set the entry point to run the application
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Define the entry point to run the application
+ENTRYPOINT ["java", "-jar", "tpFoyer-17-0.0.1.jar"]
