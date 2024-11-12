@@ -6,7 +6,7 @@ services:
       MYSQL_DATABASE: tpFoyer17
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
-      - "9104:9104"
+      - "3306:3306"
     networks:
       - mynetwork
     volumes:
