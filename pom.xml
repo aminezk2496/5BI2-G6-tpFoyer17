@@ -18,9 +18,9 @@
     </properties>
     <distributionManagement>
         <repository>
-            <id>deploymentRepo</id> <!-- Le même id doit être utilisé ici et dans settings.xml -->
+            <id>deploymentRepo</id>
             <name>Nexus Repository</name>
-            <url>http://92.168.245.95:8081/repository/maven-releases/</url>
+            <url>http://localhost:8081/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
