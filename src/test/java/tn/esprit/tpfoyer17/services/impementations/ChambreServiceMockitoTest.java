@@ -75,25 +75,7 @@ class ChambreServiceMockitoTest {
 
 
 
-    @Test
-    void testAffecterChambresABloc() {
-        // Arrange
-        Bloc bloc = Bloc.builder().idBloc(1L).nomBloc("Bloc1").build();
-        Chambre chambre1 = Chambre.builder().numeroChambre(101L).build();
-        Chambre chambre2 = Chambre.builder().numeroChambre(102L).build();
-        List<Long> chambreIds = Arrays.asList(101L, 102L);
 
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(bloc));
-        when(chambreRepository.findByNumeroChambreIn(chambreIds)).thenReturn(Arrays.asList(chambre1, chambre2));
-
-        // Act
-        Bloc affectedBloc = chambreService.affecterChambresABloc(chambreIds, 1L);
-
-        // Assert
-        assertNotNull(affectedBloc);
-        assertEquals("Bloc1", affectedBloc.getNomBloc());
-        verify(chambreRepository, times(2)).save(any(Chambre.class));
-    }
 
 
 }

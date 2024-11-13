@@ -30,8 +30,9 @@ public class Foyer implements Serializable {
 
     @ToString.Exclude
     @JsonIgnore
-    @OneToOne(mappedBy = "foyer")
-    Universite universite;
+    @OneToOne
+    @JoinColumn(name = "universite_id")  // Clé étrangère vers Universite
+    private Universite universite;
 
     @ToString.Exclude
     @JsonIgnore

@@ -1,3 +1,4 @@
+
 package tn.esprit.tpfoyer17.services.interfaces;
 
 
@@ -12,12 +13,15 @@ public interface IChambreService {
     Chambre addChambre(Chambre c); // ajouter l’équipe avec son détail
     Chambre updateChambre (Chambre c);
     Chambre retrieveChambre (long idChambre);
+    List<Chambre> findByTypeChambre(TypeChambre type); // Modifié pour accepter un paramètre
 
-    List<Chambre> findByTypeChambre();
-    public Bloc affecterChambresABloc(List<Long> numChambre, long idBloc) ;
+    // Déclaration de la méthode affecterChambresABloc
+    Bloc affecterChambreABloc(Long idChambre, long idBloc); // Mise à jour pour une chambre unique
     public List<Chambre>  getChambresParNomUniversite( String nomUniversite) ;
     public List<Chambre> getChambresParBlocEtType (long idBloc, TypeChambre typeC) ;
     public List<Chambre> getChambresParBlocEtTypeJPQL (long idBloc, TypeChambre typeC) ;
     public List<Chambre>  getChambresNonReserveParNomUniversiteEtTypeChambre( String nomUniversite,TypeChambre type) ;
     public void getChambresNonReserve() ;
+
+    void deleteChambre(long idChambre);
 }

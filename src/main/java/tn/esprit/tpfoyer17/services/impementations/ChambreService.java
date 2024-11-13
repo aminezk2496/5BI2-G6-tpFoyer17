@@ -1,4 +1,3 @@
-
 package tn.esprit.tpfoyer17.services.impementations;
 
 import lombok.AccessLevel;
@@ -22,6 +21,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChambreService implements IChambreService {
+
     ChambreRepository chambreRepository;
     BlocRepository blocRepository;
     UniversiteRepository universiteRepository;
@@ -47,20 +47,23 @@ public class ChambreService implements IChambreService {
     }
 
     @Override
-    public List<Chambre> findByTypeChambre() {
-        return chambreRepository.findByTypeChambreAndReservationsEstValide(TypeChambre.DOUBLE, true);
+    public void deleteChambre(long idChambre) {
+        chambreRepository.deleteById(idChambre);
     }
 
     @Override
-    public Bloc affecterChambresABloc(List<Long> numChambre, long idBloc) {
-        Bloc bloc = blocRepository.findById(idBloc).orElse(null);
-        //List<Chambre> chambreList = (List<Chambre>) chambreRepository.findAllById(numChambre);
-        List<Chambre> chambreList =  chambreRepository.findByNumeroChambreIn(numChambre);
+    public List<Chambre> findByTypeChambre(TypeChambre type) {
+        return chambreRepository.findByTypeChambre(type);
+    }
 
-        for(Chambre chambre: chambreList) {
-            chambre.setBloc(bloc);
-            chambreRepository.save(chambre);
-        }
+    @Override
+    public Bloc affecterChambreABloc(Long idChambre, long idBloc) {
+        Bloc bloc = blocRepository.findById(idBloc).orElseThrow(() -> new RuntimeException("Bloc non trouvé"));
+        Chambre chambre = chambreRepository.findById(idChambre).orElseThrow(() -> new RuntimeException("Chambre non trouvée"));
+
+        chambre.setBloc(bloc);
+        chambreRepository.save(chambre); // Sauvegarde la chambre avec le nouveau bloc
+
         return bloc;
     }
 
@@ -71,7 +74,7 @@ public class ChambreService implements IChambreService {
 
     @Override
     public List<Chambre> getChambresParBlocEtType(long idBloc, TypeChambre typeC) {
-        return chambreRepository.findByBlocIdBlocAndTypeChambre(idBloc,typeC);
+        return chambreRepository.findByBlocIdBlocAndTypeChambre(idBloc, typeC);
     }
 
     @Override
@@ -81,16 +84,13 @@ public class ChambreService implements IChambreService {
 
     @Override
     public List<Chambre> getChambresNonReserveParNomUniversiteEtTypeChambre(String nomUniversite, TypeChambre type) {
-        return chambreRepository.getChambresNonReserveParNomUniversiteEtTypeChambre(nomUniversite,type);
+        return chambreRepository.getChambresNonReserveParNomUniversiteEtTypeChambre(nomUniversite, type);
     }
 
-    @Scheduled(cron = "*/10 * * * * *" )
-
+    @Scheduled(cron = "*/10 * * * * *")
     @Override
     public void getChambresNonReserve() {
-
-        for (Chambre chambre : chambreRepository.getChambresNonReserve())
-        {
+        for (Chambre chambre : chambreRepository.getChambresNonReserve()) {
             log.info(chambre.toString());
         }
     }

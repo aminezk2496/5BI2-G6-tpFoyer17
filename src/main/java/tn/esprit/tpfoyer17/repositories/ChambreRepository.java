@@ -5,9 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import tn.esprit.tpfoyer17.entities.Bloc;
 import tn.esprit.tpfoyer17.entities.Chambre;
-import tn.esprit.tpfoyer17.entities.Reservation;
 import tn.esprit.tpfoyer17.entities.enumerations.TypeChambre;
 
 import java.util.List;
@@ -24,6 +22,7 @@ public interface ChambreRepository extends CrudRepository<Chambre, Long> {
 
 
 
+    List<Chambre> findByTypeChambre(TypeChambre type); // Modifié pour accepter un paramètre
 
 
 

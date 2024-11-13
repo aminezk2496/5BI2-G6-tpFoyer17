@@ -52,15 +52,24 @@ public class FoyerService implements IFoyerService {
 
     @Transactional
     public Foyer ajouterFoyerEtAffecterAUniversite(Foyer foyer, long idUniversite) {
+        // Récupérer l'université à partir de l'ID
         Universite universite = universiteRepository.findById(idUniversite).orElse(null);
-foyerRepository.save(foyer);
-for(Bloc bloc : foyer.getBlocs())
-{
-    bloc.setFoyer(foyer);
-    blocRepository.save(bloc);
-}
 
-        assert universite != null;
+        // Si l'université n'existe pas, lever une exception
+        if (universite == null) {
+            throw new RuntimeException("L'université avec l'ID " + idUniversite + " n'a pas été trouvée.");
+        }
+
+        // Sauvegarder le foyer
+        foyerRepository.save(foyer);
+
+        // Associer et sauvegarder les blocs du foyer
+        for (Bloc bloc : foyer.getBlocs()) {
+            bloc.setFoyer(foyer);
+            blocRepository.save(bloc);
+        }
+
+        // Associer le foyer à l'université
         universite.setFoyer(foyer);
         universiteRepository.save(universite);
 
