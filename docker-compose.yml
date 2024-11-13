@@ -32,7 +32,7 @@ services:
     image: "aminezarrouk/tpfoyer17angular:${BUILD_NUMBER}"
     restart: unless-stopped
     ports:
-      - "8288:80"  # Mappe le port 80 interne de Nginx à 8288 en externe pour Angular
+      - "4200:80"  # Mappe le port 80 interne de Nginx à 8288 en externe pour Angular
     networks:
       - mynetwork
     depends_on:
