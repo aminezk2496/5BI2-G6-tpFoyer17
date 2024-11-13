@@ -1,6 +1,6 @@
 FROM openjdk:17-slim
 
-EXPOSE 8287
+EXPOSE 8082  # Expose the port that the backend will run on
 
 # Install curl
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*

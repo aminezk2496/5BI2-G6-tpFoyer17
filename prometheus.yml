@@ -1,8 +1,14 @@
 global:
-  scrape_interval: 15s  # Intervalle de collecte des métriques
+  scrape_interval: 15s  # Global scrape interval
 
 scrape_configs:
   - job_name: 'jenkins'
     metrics_path: /prometheus
     static_configs:
-      - targets: ['192.168.1.13:8080']  # IP et port de Jenkins
+      - targets: ['192.168.1.13:8080']  # Jenkins IP and port
+
+  - job_name: 'springboot'
+    metrics_path: '/actuator/prometheus'  # Path for Spring Boot metrics
+    scrape_interval: 2s  # Specific scrape interval for Spring Boot
+    static_configs:
+      - targets: ['backend-spring:8082']  # Docker service name and port
