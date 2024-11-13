@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequestMapping("/tpFoyer17/api/blocs")
-//@CrossOrigin(origins = "http://192.168.33.10:4200")
+@CrossOrigin(origins = "http://192.168.33.10:4200")
 public class BlocController {
 
     IBlocService blocService;
