@@ -16,8 +16,6 @@ services:
     depends_on:
       - db
     restart: on-failure
-    networks:
-      - mynetwork
 
   db:
     container_name: db
@@ -30,8 +28,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    networks:
-      - mynetwork
+
 
   prometheus:
     image: prom/prometheus:latest
@@ -41,8 +38,7 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
       - backend-spring
-    networks:
-      - mynetwork
+
 
   grafana:
     image: grafana/grafana
@@ -53,13 +49,10 @@ services:
       - grafana:/var/lib/grafana
     depends_on:
       - prometheus
-    networks:
-      - mynetwork
+
 
 volumes:
   mysql-data:
   grafana:
 
-networks:
-  mynetwork:
-    driver: bridge
+
