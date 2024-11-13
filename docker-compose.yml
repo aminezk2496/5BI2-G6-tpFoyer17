@@ -13,20 +13,30 @@ services:
       - db:/var/lib/mysql
 
   spring-app:
-    image: "192.168.33.10:8085/repository/docker-hosted/syrineazzouz/tpfoyer17:${BUILD_NUMBER}"  # Utiliser le tag d'image basé sur le numéro de build
+    image: "192.168.33.10:8084/repository/docker-hosted/aminezarrouk/tpfoyer17:${BUILD_NUMBER}"
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpfoyer?createDatabaseIfNotExist=true&useUnicode=true"  # Utilisez le nom du service MySQL dans l'URL
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysqldb:3306/tpFoyer17?createDatabaseIfNotExist=true&useUnicode=true"
       SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: ""  # Laissez vide ou définissez une valeur si nécessaire
+      SPRING_DATASOURCE_PASSWORD: ""
       spring.jpa.hibernate.ddl-auto: "update"
       spring.jpa.properties.hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
     ports:
-      - "8082:8082"
+      - "8082:8082"  # Mappe le port 8287 interne pour Spring Boot
     depends_on:
       - mysqldb
     networks:
       - mynetwork
+
+  angular-app:
+    image: "syrineazzouz/tpfoyerangular:latest"
+    restart: unless-stopped
+    ports:
+      - "4200:80"  # Mappe le port 80 interne de Nginx à 8288 en externe pour Angular
+    networks:
+      - mynetwork
+    depends_on:
+      - spring-app
 
 networks:
   mynetwork:
