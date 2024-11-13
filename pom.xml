@@ -83,7 +83,35 @@
             <version>2.2.220</version>
             <scope>test</scope>
         </dependency>
+        <!-- Log4j2 API (pour utilisation dans l'application) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.20.0</version> <!-- Vérifiez la dernière version disponible -->
+        </dependency>
 
+        <!-- Log4j2 Core (composant principal de Log4j2) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version> <!-- Vérifiez la dernière version disponible -->
+        </dependency>
+
+        <!-- Log4j2 SLF4J Binding (pour l'intégration avec SLF4J) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.20.0</version> <!-- Vérifiez la dernière version disponible -->
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
