@@ -11,7 +11,7 @@ import tn.esprit.tpfoyer17.services.interfaces.IReservationService;
 
 import java.time.LocalDate;
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 
 @RestController
 @AllArgsConstructor
