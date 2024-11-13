@@ -14,8 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequestMapping("api/blocs")
-@CrossOrigin(origins = "http://localhost:4200") // Replace with the correct Angular app URL if needed
+@RequestMapping("/tpFoyer17/api/blocs")
+@CrossOrigin(origins = "http://192.168.33.10:4200")
 public class BlocController {
 
     IBlocService blocService;
