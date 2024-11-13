@@ -29,7 +29,7 @@ services:
       - mynetwork
 
   angular-app:
-    image: "aminezarrouk/tpfoyer17angular:${BUILD_NUMBER}"
+    image: "aminezarrouk/tpfoyer17angular:latest"
     restart: unless-stopped
     ports:
       - "4200:80"  # Mappe le port 80 interne de Nginx à 8288 en externe pour Angular
